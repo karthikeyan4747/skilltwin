@@ -1,13 +1,12 @@
 """AI Mentor: grounded guidance chat with optional single-frame screen share."""
 
-from typing import Any
-
 from fastapi import APIRouter, Request
 from starlette import status
 
 from backend.api.deps import LearnerDep, ServicesDep, SessionDep, limiter, llm_rate_limit
 from backend.api.errors import AppError
 from backend.api.schemas import MAX_SCREENSHOT_BYTES, MentorRequest
+from backend.results import MentorResult
 from backend.services.images import InvalidImageError, sanitize_screenshot
 
 router = APIRouter(prefix="/mentor", tags=["AI Mentor"])
@@ -21,7 +20,7 @@ async def chat(
     learner: LearnerDep,
     services: ServicesDep,
     session_id: SessionDep,
-) -> dict[str, Any]:
+) -> MentorResult:
     """The screenshot (if any) is validated, used for this one call, and never stored."""
     screenshot = None
     if body.screenshot_b64:
@@ -35,5 +34,4 @@ async def chat(
             ) from exc
     updated, result = await services.orchestrator.mentor_chat(learner, body.message, screenshot)
     services.repo.save_learner(session_id, updated)
-    names = [services.catalog.graph.name(sid) for sid in result.applied_focus]
-    return result.model_dump(mode="json") | {"applied_focus_names": names}
+    return result

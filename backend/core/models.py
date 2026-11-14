@@ -41,6 +41,13 @@ class Resource(Strict):
     provider: str
 
 
+class CodeSnippet(Strict):
+    id: str
+    title: str
+    skill_id: str
+    code: str
+
+
 class Question(Strict):
     """A question including its answer key; never sent to the client as-is."""
 

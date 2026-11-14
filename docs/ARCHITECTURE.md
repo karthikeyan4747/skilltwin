@@ -14,7 +14,7 @@ validated against a Pydantic schema before the core consumes it.
 | Agents | `backend/agents/` | One specialised agent per file: typed input/output, prompt as a module constant | core models, `services/llm.py` protocol |
 | Services | `backend/services/` | LLM clients (Groq + MockLLM), SQLite repository, TTL cache, job-demand lookup, catalog loader, image sanitiser | core |
 | Orchestrator | `backend/orchestrator/` | The only place agents collaborate; composes core + agents into named flows | core, agents, services |
-| API | `backend/api/` | FastAPI routes, request schemas, session/security middleware, error envelope, presenters, server-rendered pages (`/`, `/about`, `/docs`) | orchestrator, services |
+| API | `backend/api/` | FastAPI routes, request schemas, typed response views (`backend/api/views.py`), session/security middleware, error envelope, presenters, server-rendered pages (`/`, `/about`, `/docs`) | orchestrator, services |
 | Registry | `backend/registry.py` | Each feature mapped to its UI route, API tag, code and tests; read by `/about`, `/api/v1/meta` and `tests/test_docs_consistency.py` | none |
 | Frontend | `frontend/` | Semantic HTML, CSS tokens, vanilla ES modules, Web Workers | REST API |
 

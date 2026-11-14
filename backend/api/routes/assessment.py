@@ -1,7 +1,5 @@
 """Assessment: AI-written questions with a hidden Learner Twin prediction, then grading."""
 
-from typing import Any
-
 from fastapi import APIRouter, Request
 from starlette import status
 
@@ -16,16 +14,18 @@ from backend.api.deps import (
 )
 from backend.api.errors import AppError
 from backend.api.schemas import AnswerRequest, QuestionRequest
+from backend.api.views import SkillOption
 from backend.orchestrator import Answer
+from backend.results import AnswerResult, QuestionResult
 
 router = APIRouter(prefix="/assessment", tags=["Assessment"])
 
 
 @router.get("/skills", summary="List assessable skills")
-async def assessable_skills(services: ServicesDep) -> list[dict[str, str]]:
+async def assessable_skills(services: ServicesDep) -> list[SkillOption]:
     """Every skill in the catalog, prerequisites first."""
     graph = services.catalog.graph
-    return [{"id": sid, "name": graph.name(sid)} for sid in graph.topological(graph.skills)]
+    return [SkillOption(id=sid, name=graph.name(sid)) for sid in graph.topological(graph.skills)]
 
 
 @router.post("/question", summary="Get the next question")
@@ -36,14 +36,14 @@ async def next_question(
     learner: LearnerDep,
     services: ServicesDep,
     session_id: SessionDep,
-) -> dict[str, Any]:
+) -> QuestionResult:
     """The Assessor writes a question (types rotate); the Learner Twin's prediction is stored
     server-side.
     """
     skill_id = require_skill(services.catalog, body.skill_id)
     pending, result = await services.orchestrator.next_question(learner, skill_id, body.type)
     services.repo.put_question(session_id, pending)
-    return result.model_dump(mode="json")
+    return result
 
 
 @router.post("/answer", summary="Submit an answer")
@@ -54,7 +54,7 @@ async def submit_answer(
     learner: LearnerDep,
     services: ServicesDep,
     session_id: SessionDep,
-) -> dict[str, Any]:
+) -> AnswerResult:
     """Adaptation trigger: a failed answer reroutes the roadmap to its root cause."""
     pending = services.repo.pop_question(session_id, body.question_id)
     if pending is None:
@@ -74,4 +74,4 @@ async def submit_answer(
     if result.misconception:
         skill_id = pending.question.skill_id
         services.repo.add_misconception(learner_key(session_id), skill_id, result.misconception)
-    return result.model_dump(mode="json")
+    return result

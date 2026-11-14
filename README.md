@@ -139,15 +139,17 @@ npm ci && npm run format:check && npm test                     # frontend (Node 
 | Deterministic core, LLM at the edges | Decisions are pure functions; agents return JSON validated by Pydantic, retried once, then replaced by a deterministic fallback | `backend/agents/base.py`, `backend/services/llm.py` |
 | Single source of truth | Features, agents and endpoints shown on `/about` and `/api/v1/meta` come from the registry, the agent team and the OpenAPI schema, not hand-written lists | `backend/registry.py`, `backend/agents/team.py`, `backend/api/pages.py` |
 | Strict typing | `mypy --strict` on all of `backend/`; Pydantic models with `extra="forbid"` and `Literal` types at every boundary | `pyproject.toml`, `backend/core/models.py`, `backend/api/schemas.py` |
+| Typed API contracts | Every JSON endpoint returns a Pydantic model, so OpenAPI documents each response; a test fails if one returns an untyped dict | `backend/api/views.py`, `backend/results.py`, `tests/test_site.py` |
 | Dependency injection for testability | App factory takes settings and an LLM client; the orchestrator takes a clock; HTTP clients take a transport | `backend/main.py`, `backend/orchestrator/base.py`, `backend/services/jobs.py` |
 | Configuration from the environment | Settings validated at startup; production refuses to start without `SESSION_SECRET` | `backend/config.py`, `.env.example` |
 | Consistent errors | One `{error: {code, message}}` envelope; internals stay in server logs | `backend/api/errors.py` |
-| Small, focused modules | One agent per file, one view per file, every backend and frontend module under 200 lines | `backend/agents/`, `frontend/js/views/` |
+| Small, focused modules | One agent per file, one view per file, every backend and frontend module under 200 lines; cyclomatic complexity capped at 10 | `backend/agents/`, `frontend/js/views/` |
+| Readable, documented code | Docstrings on every public function and method; named constants instead of magic numbers; keyword-only booleans; value objects instead of long parameter lists | `backend/core/progress.py`, `backend/core/analysis.py` |
 | No drift between duplicated logic | Grid rules run in the browser (animation) and on the server (verification); shared fixture cases test both | `tests/fixtures/grid_cases.json`, `tests/test_grid_parity.py`, `tests/frontend/grid.test.js` |
 | Docs that match the code | A test fails if the README, SECURITY.md or ARCHITECTURE.md names a file that does not exist | `tests/test_docs_consistency.py` |
 | Automated quality gates | Every push runs ruff (lint and format), mypy, pip-audit, pytest with coverage, Prettier and the frontend tests | `.github/workflows/ci.yml` |
 | Reproducible builds | Exact Python pins, an npm lockfile for frontend tooling, multi-stage non-root Docker image | `pyproject.toml`, `package-lock.json`, `Dockerfile` |
-| Consistent style | Shared editor settings; ruff and Prettier formatting enforced in CI | `.editorconfig`, `.prettierrc.json` |
+| Consistent style | Shared editor settings; ruff (pycodestyle, bugbear, pylint, naming, complexity, docstring, security and logging rules) and Prettier enforced in CI | `.editorconfig`, `.prettierrc.json`, `pyproject.toml` |
 
 ## Agents
 
@@ -213,7 +215,7 @@ npm test                                # frontend unit tests (Node 22+, built-i
 pip-audit --skip-editable               # known-vulnerability scan of installed dependencies
 ```
 
-93 Python tests (98% line coverage of `backend/`) and 9 frontend tests at the time of writing.
+94 Python tests (98% line coverage of `backend/`) and 9 frontend tests at the time of writing.
 They cover every core function and edge case (cycle detection, no evidence, all verified,
 single-type cap), agents with MockLLM (invalid-JSON retry and runtime fallback), both adaptation
 triggers in the orchestrator, the sample scenario (`tests/test_sample_scenario.py`), API

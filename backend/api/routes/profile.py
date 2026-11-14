@@ -1,26 +1,25 @@
 """User Profile: learner details, claimed skills, certifications, projects and career goal."""
 
-from typing import Any
-
 from fastapi import APIRouter, Request
 from starlette import status
 
 from backend.api.deps import LearnerDep, ServicesDep, SessionDep, limiter, llm_rate_limit
 from backend.api.errors import AppError
+from backend.api.views import ProfileSaved, ProfileView, RoleOption, SkillOption
 from backend.core.models import Profile
 
 router = APIRouter(prefix="/profile", tags=["User Profile"])
 
 
 @router.get("", summary="Get learner profile")
-async def get_profile(learner: LearnerDep, services: ServicesDep) -> dict[str, Any]:
+async def get_profile(learner: LearnerDep, services: ServicesDep) -> ProfileView:
     """The session learner's profile plus the skill and role options for the form."""
     catalog = services.catalog
-    return {
-        "profile": learner.profile.model_dump(),
-        "skill_options": [{"id": s.id, "name": s.name} for s in catalog.graph.skills.values()],
-        "role_options": [{"id": r.id, "title": r.title} for r in catalog.roles.values()],
-    }
+    return ProfileView(
+        profile=learner.profile,
+        skill_options=[SkillOption(id=s.id, name=s.name) for s in catalog.graph.skills.values()],
+        role_options=[RoleOption(id=r.id, title=r.title) for r in catalog.roles.values()],
+    )
 
 
 @router.put("", summary="Save learner profile")
@@ -31,7 +30,7 @@ async def save_profile(
     learner: LearnerDep,
     services: ServicesDep,
     session_id: SessionDep,
-) -> dict[str, Any]:
+) -> ProfileSaved:
     """Persist the profile and refresh analysis, career ranking and roadmap (onboard flow)."""
     unknown = [s for s in profile.claimed_skills if s not in services.catalog.graph]
     if unknown or profile.career_goal not in services.catalog.roles:
@@ -51,4 +50,4 @@ async def save_profile(
         learner.model_copy(update={"profile": profile})
     )
     services.repo.save_learner(session_id, updated)
-    return {"profile": updated.profile.model_dump(), "result": result.model_dump(mode="json")}
+    return ProfileSaved(profile=updated.profile, result=result)

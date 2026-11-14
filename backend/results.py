@@ -76,11 +76,13 @@ class GoalChangeResult(FlowResult):
 
 class InterviewResult(FlowResult):
     batch: InterviewBatch
+    skill_names: dict[str, str]
 
 
 class MentorResult(FlowResult):
     reply: str
     applied_focus: list[str]
+    applied_focus_names: list[str]
 
 
 class PublishResult(FlowResult):

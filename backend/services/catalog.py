@@ -8,7 +8,17 @@ from pathlib import Path
 from typing import Any
 
 from backend.core.grid import GridLevel
-from backend.core.models import Evidence, Learner, Profile, Question, Resource, Roadmap, Role, Skill
+from backend.core.models import (
+    CodeSnippet,
+    Evidence,
+    Learner,
+    Profile,
+    Question,
+    Resource,
+    Roadmap,
+    Role,
+    Skill,
+)
 from backend.core.progress import confidence_trail
 from backend.core.skill_graph import SkillGraph
 
@@ -21,7 +31,7 @@ class Catalog:
     roles: dict[str, Role]
     resources: dict[str, list[Resource]]
     questions: list[Question]
-    snippets: list[dict[str, str]]
+    snippets: list[CodeSnippet]
     grid_levels: dict[str, GridLevel]
     seed: dict[str, Any]
 
@@ -88,7 +98,7 @@ def load_catalog() -> Catalog:
         roles=roles,
         resources=resources,
         questions=[Question.model_validate(q) for q in _read("questions.json")],
-        snippets=lessons["snippets"],
+        snippets=[CodeSnippet.model_validate(s) for s in lessons["snippets"]],
         grid_levels={g["id"]: GridLevel.model_validate(g) for g in lessons["grid_levels"]},
         seed=_read("seed_learners.json"),
     )

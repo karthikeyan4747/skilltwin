@@ -138,7 +138,7 @@ def test_grid_game_evidence_is_verified_by_replay(client: TestClient) -> None:
     bad = client.post(
         f"{API}/lessons/grid-result", json={"level_id": "straight", "moves": ["down"]}
     )
-    assert bad.json() == {"solved": False, "evidence_added": False}
+    assert bad.json()["solved"] is False and bad.json()["evidence_added"] is False
     good = client.post(
         f"{API}/lessons/grid-result", json={"level_id": "straight", "moves": ["right"] * 4}
     ).json()

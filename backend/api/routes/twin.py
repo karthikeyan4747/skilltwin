@@ -1,7 +1,5 @@
 """Learner Twin: batch of simulated 'day in the role' interviews answered by the Twin."""
 
-from typing import Any
-
 from fastapi import APIRouter, Request
 
 from backend.api.deps import (
@@ -13,6 +11,7 @@ from backend.api.deps import (
     require_role,
 )
 from backend.api.schemas import InterviewRequest
+from backend.results import InterviewResult
 
 router = APIRouter(prefix="/twin", tags=["Learner Twin"])
 
@@ -25,12 +24,11 @@ async def run_interviews(
     learner: LearnerDep,
     services: ServicesDep,
     session_id: SessionDep,
-) -> dict[str, Any]:
+) -> InterviewResult:
     """The Interviewer writes work tickets, the Twin answers as the learner and the Assessor
     grades them.
     """
     role_id = require_role(services.catalog, body.role_id or learner.profile.career_goal)
     updated, result = await services.orchestrator.twin_interview(learner, role_id, body.count)
     services.repo.save_learner(session_id, updated)
-    names = {sid: s.name for sid, s in services.catalog.graph.skills.items()}
-    return result.model_dump(mode="json") | {"skill_names": names}
+    return result

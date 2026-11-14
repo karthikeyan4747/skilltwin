@@ -68,3 +68,13 @@ def test_docs_page_allows_only_its_own_inline_script(client: TestClient) -> None
     assert "'unsafe-inline'" not in csp.split("script-src")[1].split(";")[0]
     assert "swagger-ui-dist@5.17.14" in response.text
     assert "'unsafe-inline'" not in client.get("/").headers["content-security-policy"]
+
+
+def test_every_json_endpoint_has_a_typed_response_schema(client: TestClient) -> None:
+    paths = client.get("/openapi.json").json()["paths"]
+    for path, operations in paths.items():
+        if path == "/about":
+            continue
+        for method, operation in operations.items():
+            schema = operation["responses"]["200"]["content"]["application/json"]["schema"]
+            assert "$ref" in schema or "$ref" in schema.get("items", {}), (method, path)

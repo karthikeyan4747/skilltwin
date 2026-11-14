@@ -8,11 +8,11 @@ from collections import defaultdict
 from html import escape
 from pathlib import Path
 from string import Template
-from typing import Any
 
 from fastapi import FastAPI
 
 from backend.agents.team import AgentProfile
+from backend.api.views import ReadinessSummary
 from backend.registry import ADAPTATION_LOOPS, FEATURES, REPO_URL
 
 TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
@@ -69,29 +69,29 @@ def _links_html() -> str:
     )
 
 
-def render_summary(summary: dict[str, Any]) -> str:
+def render_summary(summary: ReadinessSummary) -> str:
     """Static first-load content: the sample scenario result, features and adaptation loops."""
-    twin = summary["twin_accuracy"]
+    twin = summary.twin_accuracy
     twin_text = "measured once questions are answered" if twin is None else f"{twin:.0%}"
-    better = summary["better_fit"] or "none"
+    better = summary.better_fit or "none"
     return f"""
 <div class="page-head"><div><h1>SkillTwin</h1><p>{escape(DESCRIPTION)}</p></div></div>
 <div class="stack">
 <section class="card banner" aria-labelledby="scenario-title">
   <h2 id="scenario-title" class="card-title">Sample scenario: Python, SQL and basic HTML
-  → {escape(summary["role_title"])}</h2>
-  <p>Readiness for {escape(summary["role_title"])}: claimed {summary["claimed_pct"]:.0f}%,
-  proven by evidence {summary["proven_pct"]:.0f}%.</p>
+  → {escape(summary.role_title)}</h2>
+  <p>Readiness for {escape(summary.role_title)}: claimed {summary.claimed_pct:.0f}%,
+  proven by evidence {summary.proven_pct:.0f}%.</p>
   <ul>
-    <li>Verified by evidence: {_joined(summary["verified"], "none yet")}</li>
-    <li>Claimed but not yet proven: {_joined(summary["unproven"], "none")}</li>
-    <li>Missing skills: {_joined(summary["missing"], "none")}</li>
+    <li>Verified by evidence: {_joined(summary.verified, "none yet")}</li>
+    <li>Claimed but not yet proven: {_joined(summary.unproven, "none")}</li>
+    <li>Missing skills: {_joined(summary.missing, "none")}</li>
     <li>Better-fit role on proven skills: {escape(better)}</li>
-    <li>Estimated time to ready: {summary["time_to_ready_weeks"]} weeks</li>
+    <li>Estimated time to ready: {summary.time_to_ready_weeks} weeks</li>
     <li>Learner Twin prediction accuracy: {escape(twin_text)}</li>
   </ul>
   <h3>Roadmap order (prerequisites first)</h3>
-  {_list(summary["roadmap_order"], "ol")}
+  {_list(summary.roadmap_order, "ol")}
 </section>
 <section class="card"><h2 class="card-title">The six required features</h2>
 {_features_html()}</section>

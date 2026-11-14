@@ -70,8 +70,12 @@ class CoachingFlows(OrchestratorBase):
             role_id=role_id, timestamp=ctx.now, results=list(results), weak_areas=weak, plan=plan
         )
         updated = learner.model_copy(update={"latest_interview": batch})
+        named = {r.skill_id for r in batch.results} | set(weak)
         return updated, InterviewResult(
-            batch=batch, agent_trace=trace.steps, offline_ai=trace.offline
+            batch=batch,
+            skill_names={sid: ctx.name(sid) for sid in named},
+            agent_trace=trace.steps,
+            offline_ai=trace.offline,
         )
 
     async def _simulate(
@@ -112,6 +116,7 @@ class CoachingFlows(OrchestratorBase):
         return learner.model_copy(update={"roadmap": plan}), MentorResult(
             reply=out.reply,
             applied_focus=applied,
+            applied_focus_names=ctx.names(applied),
             agent_trace=trace.steps,
             offline_ai=trace.offline,
         )
