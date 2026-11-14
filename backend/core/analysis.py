@@ -24,7 +24,7 @@ PASS_SCORE = 0.5
 
 def recency_weight(timestamp: datetime, now: datetime) -> float:
     age_days = max((now - timestamp).total_seconds() / 86400, 0.0)
-    return 0.5 ** (age_days / RECENCY_HALF_LIFE_DAYS)
+    return float(0.5 ** (age_days / RECENCY_HALF_LIFE_DAYS))
 
 
 def skill_confidence(evidence: list[Evidence], claimed: bool, now: datetime) -> float:

@@ -28,10 +28,10 @@ def sanitize_screenshot(data_b64: str, max_bytes: int) -> str:
                 raise InvalidImage("format not allowed")
             probe.verify()
         with Image.open(io.BytesIO(raw)) as image:
-            image = image.convert("RGB")
-            image.thumbnail((MAX_DIMENSION, MAX_DIMENSION))
+            rgb = image.convert("RGB")
+            rgb.thumbnail((MAX_DIMENSION, MAX_DIMENSION))
             out = io.BytesIO()
-            image.save(out, format="JPEG", quality=80)
+            rgb.save(out, format="JPEG", quality=80)
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
         raise InvalidImage("could not decode") from exc
     return base64.b64encode(out.getvalue()).decode("ascii")

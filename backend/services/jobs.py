@@ -36,7 +36,7 @@ class JobDemandService:
         self._cache = TTLCache(DEMAND_TTL_SECONDS, max_items=32)
 
     async def demand(self, role: Role) -> DemandReport:
-        cached = self._cache.get(role.id)
+        cached: DemandReport | None = self._cache.get(role.id)
         if cached is not None:
             return cached
         report = DemandReport(source="curated", counts=dict(role.demand))

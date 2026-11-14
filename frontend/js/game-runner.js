@@ -21,18 +21,3 @@ export function runGameCode(code) {
     };
   });
 }
-
-export function simulate(level, moves) {
-  const walls = new Set(level.walls.map(([x, y]) => `${x},${y}`));
-  let [x, y] = level.start;
-  const path = [[x, y]];
-  const deltas = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-  for (const move of moves) {
-    const [dx, dy] = deltas[move];
-    const [nx, ny] = [x + dx, y + dy];
-    if (nx >= 0 && nx < 5 && ny >= 0 && ny < 5 && !walls.has(`${nx},${ny}`)) [x, y] = [nx, ny];
-    path.push([x, y]);
-    if (x === level.goal[0] && y === level.goal[1]) break;
-  }
-  return path;
-}

@@ -16,8 +16,15 @@ prediction accuracy is shown as a measure of how well the system models that lea
   (features → UI route → API endpoints → code → tests, plus the agent roster) ·
   [/docs](https://skilltwin-616974575902.asia-south1.run.app/docs) (OpenAPI) ·
   [/api/v1/meta](https://skilltwin-616974575902.asia-south1.run.app/api/v1/meta) (the same data as JSON)
-- **Vertical:** Education & Career Development
 - Works fully without API keys (deterministic offline AI mode).
+
+## Chosen vertical
+
+**Education & Career Development.** The persona is a learner (student or employee) aiming at a
+target job role, plus the university or employer that trains them. The problem: platforms give
+everyone the same courses, ignoring what each learner already knows, how they are progressing and
+where they want to go. SkillTwin's decisions are driven by that learner's own context: proven
+skills, failed answers and misconceptions, career goal and weekly study time.
 
 ## Problem statement alignment
 
@@ -39,38 +46,7 @@ Lessons (Python code visualizer, JavaScript grid game), Learn in Public, Institu
 The full map, including every API endpoint, is generated from `backend/registry.py` and shown on
 `/about`; `tests/test_docs_consistency.py` fails if a file this README names does not exist.
 
-## Architecture
-
-```mermaid
-flowchart LR
-  UI[Browser UI] -->|REST /api/v1| API[FastAPI]
-  UI -. Python .-> PW[Pyodide worker]
-  UI -. JavaScript .-> GW[Grid Game worker]
-  API --> ORC[Orchestrator]
-  ORC --> CORE[Deterministic core]
-  ORC --> AGENTS[Specialised agents]
-  AGENTS --> LLM{Groq JSON mode or MockLLM}
-  API --> DB[(SQLite, per session)]
-  API --> JOBS[Adzuna demand or curated]
-```
-
-**Deterministic core, LLM at the edges.** Every decision that changes learner state (confidence,
-verification, readiness, gap order, root cause, reroute, time to ready, Twin accuracy) is a pure,
-typed, unit-tested function in `backend/core/`. Agents in `backend/agents/` only write, grade,
-predict and explain, and their output is schema-validated before the core uses it.
-`backend/orchestrator/` is the only place agents collaborate. Details:
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
-## Run and test
-
-```bash
-python3.12 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-uvicorn backend.main:create_app --factory --reload   # http://localhost:8000
-ruff check . && ruff format --check . && pytest --cov
-```
-
-## How it works
+## Approach and logic
 
 1. **Evidence-verified skills.** Each skill has `claimed` (self-reported) and `confidence` (0–1)
    computed only from evidence: a recency-weighted, type-weighted mean of assessment scores
@@ -111,6 +87,50 @@ sequenceDiagram
   end
 ```
 
+## How the solution works
+
+```mermaid
+flowchart LR
+  UI[Browser UI] -->|REST /api/v1| API[FastAPI]
+  UI -. Python .-> PW[Pyodide worker]
+  UI -. JavaScript .-> GW[Grid Game worker]
+  API --> ORC[Orchestrator]
+  ORC --> CORE[Deterministic core]
+  ORC --> AGENTS[Specialised agents]
+  AGENTS --> LLM{Groq JSON mode or MockLLM}
+  API --> DB[(SQLite, per session)]
+  API --> JOBS[Adzuna demand or curated]
+```
+
+**Deterministic core, LLM at the edges.** Every decision that changes learner state (confidence,
+verification, readiness, gap order, root cause, reroute, time to ready, Twin accuracy) is a pure,
+typed, unit-tested function in `backend/core/`. Agents in `backend/agents/` only write, grade,
+predict and explain, and their output is schema-validated before the core uses it.
+`backend/orchestrator/` is the only place agents collaborate. Details:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+A typical session:
+
+1. A new guest session gets its own copy of the sample learner; the Career and Recommender agents
+   rank roles and explain the gap roadmap built by the core.
+2. **Assessment:** the Assessor writes a question, the Learner Twin secretly predicts the answer,
+   the learner answers, the core turns the score into evidence and updates confidence. A failed
+   answer triggers diagnosis and a reroute (sequence below).
+3. **Career Matching:** switching goal shows carryover first, then rebuilds the roadmap.
+4. **AI Mentor** answers from the learner's state and can re-prioritise roadmap steps; the
+   **Twin interview batch** predicts weak areas for the target role.
+5. **Progress** charts confidence over time; **Learn in Public** drafts a post from real evidence.
+
+## Run and test
+
+```bash
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+uvicorn backend.main:create_app --factory --reload   # http://localhost:8000
+ruff check . && ruff format --check . && mypy && pytest --cov   # backend
+npm test                                                       # frontend (Node 22+, no deps)
+```
+
 ## Agents
 
 | Agent | Responsibility | Model tier |
@@ -140,7 +160,8 @@ verified decode with no persistence; per session + IP rate limits on every LLM r
 (no inline scripts; `/docs` allows only Swagger UI's own bootstrap script by SHA-256 hash) and
 security headers; learner code runs only in browser workers with timeouts;
 all text rendered via `textContent`; parameterised SQL; generic client errors; pinned
-dependencies; non-root container. Full details: [SECURITY.md](SECURITY.md).
+dependencies scanned by `pip-audit` in CI; non-root container. Full details:
+[SECURITY.md](SECURITY.md).
 
 ## Efficiency
 
@@ -166,19 +187,23 @@ dependencies; non-root container. Full details: [SECURITY.md](SECURITY.md).
 ## Testing
 
 ```bash
-pip install -e ".[dev]"
-ruff check . && ruff format --check .
-pytest --cov
+ruff check . && ruff format --check .   # lint + format
+mypy                                    # strict static typing of backend/
+pytest --cov                            # backend unit, agent, orchestrator, API and site tests
+npm test                                # frontend unit tests (Node 22+, built-in runner, no deps)
+pip-audit --skip-editable               # known-vulnerability scan of installed dependencies
 ```
 
-87 tests, 98% line coverage of `backend/` at the time of writing. Coverage includes every core
-function and edge case (cycle detection, no evidence, all verified, single-type cap), agents with
-MockLLM (invalid-JSON retry and runtime fallback), both adaptation triggers in the orchestrator,
-the sample scenario (`tests/test_sample_scenario.py`), API behaviour (validation errors,
-session isolation, rate limiting, body size limit, security headers, screenshot validation),
-server-rendered pages and metadata (`tests/test_site.py`), and that every file the docs name
-exists (`tests/test_docs_consistency.py`).
-CI (`.github/workflows/ci.yml`) runs ruff check, ruff format check and pytest with coverage.
+93 Python tests (98% line coverage of `backend/`) and 9 frontend tests at the time of writing.
+They cover every core function and edge case (cycle detection, no evidence, all verified,
+single-type cap), agents with MockLLM (invalid-JSON retry and runtime fallback), both adaptation
+triggers in the orchestrator, the sample scenario (`tests/test_sample_scenario.py`), API
+behaviour (validation errors, session isolation, rate limiting, body size limit, security
+headers, screenshot validation), server-rendered pages and metadata (`tests/test_site.py`), and
+that every file the docs name exists (`tests/test_docs_consistency.py`). The Grid Game rules run
+in the browser for animation and on the server for verification; `tests/fixtures/grid_cases.json`
+is checked by both `tests/frontend/grid.test.js` and `tests/test_grid_parity.py`, so the two
+implementations cannot drift. CI (`.github/workflows/ci.yml`) runs all of the above on every push.
 
 ## Accessibility (WCAG 2.1 AA target)
 
@@ -187,7 +212,8 @@ and inline form errors, visible focus ring, full keyboard operation (ARIA tablis
 focus-trapped modal closed by Esc), `aria-live` for results and toasts, light and dark themes via
 `prefers-color-scheme`, `prefers-reduced-motion` respected (results and Grid Game animation),
 icons and text alongside colour, `lang` attribute, ≥ 44 px touch targets, layouts tested at 360 px
-with no horizontal scroll. Every chart, graph, visualizer and game state has a text alternative
+with no horizontal scroll. A scripted contrast check of every visible text element on all 11
+views, run in the browser during development, passes AA in both light and dark themes. Every chart, graph, visualizer and game state has a text alternative
 (data table, nested list, full text trace, board description). Grading open answers on concepts
 separately from fluency is an inclusive-design choice for non-native speakers.
 

@@ -14,3 +14,4 @@ docs
 .coverage
 *.egg-info
 .claude
+package.json

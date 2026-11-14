@@ -11,6 +11,7 @@ from backend.services.llm import LLMClient, LLMError
 
 log = logging.getLogger(__name__)
 Tier = Literal["fast", "smart", "vision"]
+Mode = Literal["live", "offline"]
 
 SAFETY_PREAMBLE = (
     "You are one specialised agent inside SkillTwin, an AI learning platform. "
@@ -30,7 +31,7 @@ class TraceStep(BaseModel):
     agent: str
     purpose: str
     duration_ms: int
-    mode: Literal["live", "offline"]
+    mode: Mode
 
 
 class AgentTrace:
@@ -39,7 +40,7 @@ class AgentTrace:
     def __init__(self) -> None:
         self.steps: list[TraceStep] = []
 
-    def add(self, agent: str, purpose: str, started: float, mode: str) -> None:
+    def add(self, agent: str, purpose: str, started: float, mode: Mode) -> None:
         duration = int((time.perf_counter() - started) * 1000)
         self.steps.append(TraceStep(agent=agent, purpose=purpose, duration_ms=duration, mode=mode))
 
@@ -77,7 +78,7 @@ class Agent[InT: BaseModel, OutT: BaseModel]:
     async def run(self, inp: InT, trace: AgentTrace | None = None) -> OutT:
         """Run on the live LLM; on failure fall back to the deterministic MockLLM."""
         started = time.perf_counter()
-        mode = "live" if self._llm.live else "offline"
+        mode: Mode = "live" if self._llm.live else "offline"
         try:
             result = await self._complete(self._llm, inp)
         except (LLMError, ValidationError, ValueError) as exc:

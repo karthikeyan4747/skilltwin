@@ -1,0 +1,8 @@
+[
+  {"level": "straight", "moves": ["right", "right", "right", "right"], "solved": true},
+  {"level": "straight", "moves": ["down", "right"], "solved": false},
+  {"level": "around-wall", "moves": ["right", "right", "right", "right"], "solved": false},
+  {"level": "around-wall", "moves": ["up", "up", "right", "right", "right", "right", "down", "down"], "solved": true},
+  {"level": "zigzag", "moves": ["down", "down", "down", "right", "right", "up", "up", "right", "right", "down", "down", "down"], "solved": true},
+  {"level": "zigzag", "moves": ["right", "right", "right", "right", "down", "down", "down", "down"], "solved": false}
+]

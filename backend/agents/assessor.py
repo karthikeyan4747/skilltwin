@@ -1,13 +1,11 @@
 """Assessor agent: writes assessment questions and grades open answers."""
 
-from typing import Literal, Self
+from typing import Self
 
 from pydantic import BaseModel, Field, model_validator
 
 from backend.agents.base import Agent
-from backend.core.models import Question, QuestionType
-
-Difficulty = Literal["easy", "medium", "hard"]
+from backend.core.models import Difficulty, Question, QuestionType
 
 
 class QuestionWriterIn(BaseModel):

@@ -2,7 +2,7 @@
 
 import re
 
-from backend.core.models import AssessmentRecord, Question, QuestionType
+from backend.core.models import AssessmentRecord, Difficulty, Question, QuestionType
 
 TYPE_ROTATION: list[QuestionType] = [
     "mcq",
@@ -66,7 +66,7 @@ def next_type(
     return ordered[(ordered.index(past[-1]) + 1) % len(ordered)]
 
 
-def difficulty_for(confidence: float) -> str:
+def difficulty_for(confidence: float) -> Difficulty:
     if confidence < 0.4:
         return "easy"
     if confidence < 0.7:

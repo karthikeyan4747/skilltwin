@@ -111,8 +111,9 @@ This document lists every security control in SkillTwin and where it is implemen
 
 ## Supply chain and runtime
 
-- Python dependencies are pinned to exact versions in `pyproject.toml`; Pyodide is pinned to
-  `v0.26.4`.
+- Python dependencies are pinned to exact versions in `pyproject.toml` and scanned for known
+  vulnerabilities with `pip-audit` on every CI run; Pyodide is pinned to `v0.26.4`. Static
+  typing (`mypy --strict`) also runs in CI.
 - The Docker image is multi-stage on `python:3.12-slim`, contains only `backend/` and `frontend/`,
   and runs as a non-root user (uid 10001).
 

@@ -9,6 +9,7 @@ EvidenceType = Literal["mcq", "explain_back", "predict_output", "code_exercise",
 QuestionType = EvidenceType
 StepStatus = Literal["todo", "in_progress", "done"]
 RerouteTrigger = Literal["failed_assessment", "goal_change", "mentor"]
+Difficulty = Literal["easy", "medium", "hard"]
 ResourceKind = Literal["course", "tutorial", "exercise"]
 ShortText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)]
 

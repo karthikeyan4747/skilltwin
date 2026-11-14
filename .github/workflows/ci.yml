@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,5 +23,21 @@ jobs:
         run: ruff check .
       - name: Format
         run: ruff format --check .
+      - name: Type check (mypy --strict)
+        run: mypy
+      - name: Dependency audit
+        run: pip-audit --skip-editable
       - name: Test
         run: pytest --cov --cov-report=term-missing
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax check
+        run: for f in frontend/js/*.js frontend/js/*/*.js; do node --check "$f"; done
+      - name: Test
+        run: npm test

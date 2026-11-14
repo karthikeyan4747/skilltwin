@@ -1,0 +1,9 @@
+{
+  "name": "skilltwin",
+  "private": true,
+  "type": "module",
+  "description": "Frontend unit tests only: the UI is vanilla ES modules with no build step or runtime dependencies.",
+  "scripts": {
+    "test": "node --test tests/frontend/*.test.js"
+  }
+}

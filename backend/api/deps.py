@@ -48,11 +48,13 @@ def llm_rate_limit() -> str:
 
 
 def get_services(request: Request) -> Services:
-    return request.app.state.services
+    services: Services = request.app.state.services
+    return services
 
 
 def get_session_id(request: Request) -> str:
-    return request.state.session_id
+    session_id: str = request.state.session_id
+    return session_id
 
 
 def learner_key(session_id: str) -> str:

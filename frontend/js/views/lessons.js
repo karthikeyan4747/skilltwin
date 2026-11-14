@@ -1,6 +1,7 @@
 // Lessons: Code Visualizer (Pyodide + sys.settrace) and Grid Game (sandboxed JavaScript).
 import { api } from "../api.js";
-import { runGameCode, simulate } from "../game-runner.js";
+import { runGameCode } from "../game-runner.js";
+import { GRID_SIZE, simulate } from "../grid.js";
 import { runPython, stopPython } from "../python-runner.js";
 import { tabs } from "../tabs.js";
 import { announce, button, card, conf, el, loadInto, pageHead, reducedMotion, toast, withLoading } from "../ui.js";
@@ -82,8 +83,8 @@ function stepper(view, lines, trace) {
 function board(level, [px, py]) {
   const walls = new Set(level.walls.map(([x, y]) => `${x},${y}`));
   const cells = [];
-  for (let y = 0; y < 5; y += 1) {
-    for (let x = 0; x < 5; x += 1) {
+  for (let y = 0; y < GRID_SIZE; y += 1) {
+    for (let x = 0; x < GRID_SIZE; x += 1) {
       const kind = x === px && y === py ? "is-player" : walls.has(`${x},${y}`) ? "is-wall" : x === level.goal[0] && y === level.goal[1] ? "is-goal" : "";
       cells.push(el("div", { class: `grid-cell ${kind}`, text: { "is-player": "🤖", "is-wall": "■", "is-goal": "★" }[kind] || "" }));
     }

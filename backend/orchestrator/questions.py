@@ -8,7 +8,7 @@ import uuid
 from backend.agents.assessor import QuestionWriterIn
 from backend.agents.base import AgentTrace
 from backend.core import grading
-from backend.core.models import Learner, Question, QuestionType
+from backend.core.models import Difficulty, Learner, Question, QuestionType
 from backend.orchestrator.base import OrchestratorBase
 from backend.orchestrator.context import LearnerContext
 from backend.results import PublicQuestion, QuestionResult
@@ -55,7 +55,7 @@ class QuestionFlows(OrchestratorBase):
         )
 
     async def _write_question(
-        self, ctx: LearnerContext, example: Question, difficulty: str, trace: AgentTrace
+        self, ctx: LearnerContext, example: Question, difficulty: Difficulty, trace: AgentTrace
     ) -> Question:
         """Code exercises come from the trusted bank; other types are AI-written and cached."""
         new_id = uuid.uuid4().hex
