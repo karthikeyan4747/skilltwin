@@ -3,6 +3,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Request
+from starlette import status
 
 from backend.api.deps import LearnerDep, ServicesDep, SessionDep, limiter, llm_rate_limit
 from backend.api.errors import AppError
@@ -34,7 +35,11 @@ async def save_profile(
     """Persist the profile and refresh analysis, career ranking and roadmap (onboard flow)."""
     unknown = [s for s in profile.claimed_skills if s not in services.catalog.graph]
     if unknown or profile.career_goal not in services.catalog.roles:
-        raise AppError(422, "validation_error", "Choose skills and a career goal from the lists.")
+        raise AppError(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "validation_error",
+            "Choose skills and a career goal from the lists.",
+        )
     profile = profile.model_copy(
         update={"claimed_skills": list(dict.fromkeys(profile.claimed_skills))}
     )

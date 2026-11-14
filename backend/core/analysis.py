@@ -20,17 +20,19 @@ SINGLE_TYPE_CAP = 0.6
 CLAIMED_PRIOR = 0.2
 RECENCY_HALF_LIFE_DAYS = 14.0
 PASS_SCORE = 0.5
+MIN_EVIDENCE_TYPES = 2
 
 
 def recency_weight(timestamp: datetime, now: datetime) -> float:
+    """Weight of evidence by age: halves every RECENCY_HALF_LIFE_DAYS days."""
     age_days = max((now - timestamp).total_seconds() / 86400, 0.0)
     return float(0.5 ** (age_days / RECENCY_HALF_LIFE_DAYS))
 
 
-def skill_confidence(evidence: list[Evidence], claimed: bool, now: datetime) -> float:
+def skill_confidence(evidence: list[Evidence], *, claimed: bool, now: datetime) -> float:
     """Recency-weighted, type-weighted mean of evidence scores.
 
-    Capped at SINGLE_TYPE_CAP unless at least two distinct evidence types exist.
+    Capped at SINGLE_TYPE_CAP unless at least MIN_EVIDENCE_TYPES distinct types exist.
     Without evidence a claimed skill scores CLAIMED_PRIOR and an unclaimed one 0.
     """
     if not evidence:
@@ -41,7 +43,7 @@ def skill_confidence(evidence: list[Evidence], claimed: bool, now: datetime) -> 
         total += weight
         weighted += weight * item.score
     confidence = weighted / total
-    if len({item.type for item in evidence}) < 2:
+    if len({item.type for item in evidence}) < MIN_EVIDENCE_TYPES:
         confidence = min(confidence, SINGLE_TYPE_CAP)
     return round(confidence, 4)
 
@@ -60,7 +62,7 @@ def analyze_skills(
     statuses: dict[str, SkillStatus] = {}
     for skill_id in graph.topological(graph.skills):
         items = by_skill.get(skill_id, [])
-        confidence = skill_confidence(items, skill_id in claimed_set, now)
+        confidence = skill_confidence(items, claimed=skill_id in claimed_set, now=now)
         statuses[skill_id] = SkillStatus(
             skill_id=skill_id,
             name=graph.name(skill_id),
@@ -82,10 +84,12 @@ def is_weak(status: SkillStatus) -> bool:
 def strengths_and_weaknesses(
     statuses: dict[str, SkillStatus],
 ) -> tuple[list[str], list[str]]:
+    """Verified skills (strengths) and claimed-unproven or low-confidence skills."""
     strengths = [sid for sid, s in statuses.items() if s.verified]
     weaknesses = [sid for sid, s in statuses.items() if is_weak(s)]
     return strengths, weaknesses
 
 
 def confidences(statuses: dict[str, SkillStatus]) -> dict[str, float]:
+    """Confidence per skill id, the input to root-cause diagnosis."""
     return {sid: s.confidence for sid, s in statuses.items()}

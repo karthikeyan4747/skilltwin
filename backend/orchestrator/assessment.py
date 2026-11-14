@@ -98,15 +98,12 @@ class AssessmentFlows(OrchestratorBase):
                 trace,
             )
             misconception = observed.misconception
-        updated = progress.record_outcome(
-            learner,
-            self.catalog.graph,
-            question,
-            graded.score,
-            pending.prediction.predicted_correct,
-            misconception,
-            ctx.now,
+        outcome = progress.Outcome(
+            score=graded.score,
+            predicted_correct=pending.prediction.predicted_correct,
+            misconception=misconception,
         )
+        updated = progress.record_outcome(learner, self.catalog.graph, question, outcome, ctx.now)
         diagnosis = None
         if not correct:
             updated, diagnosis = await self._reroute(

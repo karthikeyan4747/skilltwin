@@ -12,6 +12,7 @@ Payload = dict[str, Any]
 
 
 def recommender(payload: Payload) -> Payload:
+    """One templated reason per roadmap step."""
     inp = RecommenderIn.model_validate(payload)
     reasons = [
         {
@@ -25,6 +26,7 @@ def recommender(payload: Payload) -> Payload:
 
 
 def interviewer(payload: Payload) -> Payload:
+    """Tickets cycled from the bank, highest-weight skills first."""
     inp = InterviewerIn.model_validate(payload)
     ranked = sorted(inp.examples, key=lambda e: (-e.weight, e.skill_id))
     tickets = [
@@ -40,6 +42,7 @@ def interviewer(payload: Payload) -> Payload:
 
 
 def career(payload: Payload) -> Payload:
+    """Claimed vs proven summary and a better-fit reason when one exists."""
     inp = CareerIn.model_validate(payload)
     target = next((r for r in inp.ranking if r.title == inp.target_role), inp.ranking[0])
     summary = (
@@ -54,6 +57,7 @@ def career(payload: Payload) -> Payload:
 
 
 def mentor(payload: Payload) -> Payload:
+    """Grounded reply; focuses roadmap skills named in the message."""
     message = str(payload["message"]).lower()
     roadmap: dict[str, str] = payload["roadmap_skills"]
     focus = [sid for sid, name in roadmap.items() if name.lower() in message][:3]
@@ -75,6 +79,7 @@ def mentor(payload: Payload) -> Payload:
 
 
 def publisher(payload: Payload) -> Payload:
+    """Post and learning log assembled from the provided facts only."""
     inp = PublisherIn.model_validate(payload)
     skills = ", ".join(inp.verified_skills) or "my first skills"
     post = (

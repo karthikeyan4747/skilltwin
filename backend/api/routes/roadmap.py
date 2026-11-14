@@ -3,6 +3,7 @@
 from typing import Any
 
 from fastapi import APIRouter
+from starlette import status
 
 from backend.api.deps import LearnerDep, ServicesDep, SessionDep, require_skill
 from backend.api.errors import AppError
@@ -34,7 +35,9 @@ async def update_step(
     try:
         plan = set_step_status(learner.roadmap, skill_id, body.status, body.actual_hours)
     except KeyError as exc:
-        raise AppError(404, "step_not_found", "That step is not on your roadmap.") from exc
+        raise AppError(
+            status.HTTP_404_NOT_FOUND, "step_not_found", "That step is not on your roadmap."
+        ) from exc
     updated = learner.model_copy(update={"roadmap": plan})
     services.repo.save_learner(session_id, updated)
     return roadmap_view(services.orchestrator.context(updated))

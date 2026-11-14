@@ -3,6 +3,7 @@
 from typing import Any
 
 from fastapi import APIRouter
+from starlette import status
 
 from backend.api.deps import LearnerDep, ServicesDep, SessionDep
 from backend.api.errors import AppError
@@ -30,7 +31,7 @@ async def grid_result(
     """The server replays the move list (never the learner's code) to verify the solution."""
     level = services.catalog.grid_levels.get(body.level_id)
     if level is None:
-        raise AppError(404, "unknown_level", "That level does not exist.")
+        raise AppError(status.HTTP_404_NOT_FOUND, "unknown_level", "That level does not exist.")
     if not replay(level, body.moves):
         return {"solved": False, "evidence_added": False}
     graph = services.catalog.graph

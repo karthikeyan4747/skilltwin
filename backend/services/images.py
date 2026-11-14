@@ -10,7 +10,7 @@ ALLOWED_FORMATS = {"JPEG", "PNG"}
 MAX_DIMENSION = 1024
 
 
-class InvalidImage(ValueError):
+class InvalidImageError(ValueError):
     """The upload is not an allowed, decodable image within limits."""
 
 
@@ -19,13 +19,13 @@ def sanitize_screenshot(data_b64: str, max_bytes: int) -> str:
     try:
         raw = base64.b64decode(data_b64, validate=True)
     except (binascii.Error, ValueError) as exc:
-        raise InvalidImage("not base64") from exc
+        raise InvalidImageError("not base64") from exc
     if len(raw) > max_bytes:
-        raise InvalidImage("too large")
+        raise InvalidImageError("too large")
     try:
         with Image.open(io.BytesIO(raw)) as probe:
             if probe.format not in ALLOWED_FORMATS:
-                raise InvalidImage("format not allowed")
+                raise InvalidImageError("format not allowed")
             probe.verify()
         with Image.open(io.BytesIO(raw)) as image:
             rgb = image.convert("RGB")
@@ -33,5 +33,5 @@ def sanitize_screenshot(data_b64: str, max_bytes: int) -> str:
             out = io.BytesIO()
             rgb.save(out, format="JPEG", quality=80)
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
-        raise InvalidImage("could not decode") from exc
+        raise InvalidImageError("could not decode") from exc
     return base64.b64encode(out.getvalue()).decode("ascii")

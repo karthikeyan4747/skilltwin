@@ -30,7 +30,9 @@ class LLMClient(Protocol):
         model: str,
         max_tokens: int,
         image_jpeg_b64: str | None = None,
-    ) -> str: ...
+    ) -> str:
+        """Return the model's raw JSON text for an agent call."""
+        ...
 
 
 def wrap_payload(payload: dict[str, Any]) -> str:
@@ -61,6 +63,7 @@ class GroqClient:
         max_tokens: int,
         image_jpeg_b64: str | None = None,
     ) -> str:
+        """Call Groq in JSON mode; provider errors are raised as LLMError."""
         text = wrap_payload(payload)
         content: Any = text
         if image_jpeg_b64:
@@ -101,14 +104,6 @@ class MockLLM:
     def __init__(self, fixtures: dict[str, Fixture]) -> None:
         self._fixtures = fixtures
 
-    async def complete_json(
-        self,
-        *,
-        agent: str,
-        system: str,
-        payload: dict[str, Any],
-        model: str,
-        max_tokens: int,
-        image_jpeg_b64: str | None = None,
-    ) -> str:
+    async def complete_json(self, *, agent: str, payload: dict[str, Any], **_settings: Any) -> str:
+        """Return the agent's deterministic fixture as JSON text; model settings are ignored."""
         return json.dumps(self._fixtures[agent](payload))

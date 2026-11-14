@@ -2,7 +2,10 @@
 
 import re
 
+from backend.core.analysis import VERIFIED_THRESHOLD
 from backend.core.models import AssessmentRecord, Difficulty, Question, QuestionType
+
+EASY_BELOW = 0.4
 
 TYPE_ROTATION: list[QuestionType] = [
     "mcq",
@@ -20,21 +23,25 @@ def normalize_output(text: str) -> str:
 
 
 def grade_mcq(question: Question, choice: int | None) -> float:
+    """1.0 for the keyed option, else 0.0."""
     return 1.0 if choice is not None and choice == question.answer_index else 0.0
 
 
 def grade_predict_output(question: Question, answer: str) -> float:
+    """1.0 when the answer matches the expected output after normalisation."""
     expected = normalize_output(question.expected_output or "")
     return 1.0 if expected and normalize_output(answer) == expected else 0.0
 
 
 def grade_code_exercise(tests_passed: int, tests_total: int) -> float:
+    """Share of tests passed, as reported by the browser test runner."""
     if tests_total <= 0:
         return 0.0
     return round(min(tests_passed, tests_total) / tests_total, 3)
 
 
 def correct_answer_text(question: Question) -> str:
+    """Human-readable correct answer shown after submission."""
     if question.type == "mcq" and question.answer_index is not None:
         return question.options[question.answer_index]
     if question.type == "predict_output":
@@ -67,8 +74,9 @@ def next_type(
 
 
 def difficulty_for(confidence: float) -> Difficulty:
-    if confidence < 0.4:
+    """Question difficulty for the learner's current confidence."""
+    if confidence < EASY_BELOW:
         return "easy"
-    if confidence < 0.7:
+    if confidence < VERIFIED_THRESHOLD:
         return "medium"
     return "hard"

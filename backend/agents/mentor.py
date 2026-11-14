@@ -42,12 +42,15 @@ class Mentor(Agent[MentorIn, MentorOut]):
     )
 
     def tier_for(self, inp: MentorIn) -> Tier:
+        """Use the vision model only when a screenshot is attached."""
         return "vision" if inp.screenshot_jpeg_b64 else self.tier
 
     def image_for(self, inp: MentorIn) -> str | None:
+        """The sanitised screenshot, if the learner shared one."""
         return inp.screenshot_jpeg_b64
 
     def payload(self, inp: MentorIn) -> dict[str, Any]:
+        """Payload without the image bytes; the model only sees a screenshot_attached flag."""
         data = inp.model_dump(mode="json", exclude={"screenshot_jpeg_b64"})
         data["screenshot_attached"] = inp.screenshot_jpeg_b64 is not None
         return data

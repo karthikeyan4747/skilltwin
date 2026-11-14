@@ -11,7 +11,7 @@ from backend.core.grading import (
 from backend.core.grid import GridLevel, replay
 from backend.core.insights import top_misconceptions
 from backend.core.models import AssessmentRecord, Question, TwinRecord
-from backend.core.progress import misconceptions_overcome, record_outcome
+from backend.core.progress import Outcome, misconceptions_overcome, record_outcome
 from backend.core.twin import baseline_prediction, twin_accuracy
 
 MCQ = Question(
@@ -96,11 +96,11 @@ def test_grid_replay() -> None:
 def test_record_outcome_and_overcome(catalog, sample_learner, now) -> None:
     from datetime import timedelta
 
-    failed = record_outcome(sample_learner, catalog.graph, MCQ, 0.0, True, "Thinks a", now)
+    failed = record_outcome(sample_learner, catalog.graph, MCQ, Outcome(0.0, True, "Thinks a"), now)
     assert failed.twin_history[-1].actual_correct is False
     assert failed.misconceptions[-1].text == "Thinks a"
     assert failed.confidence_history[-1].skill_id == "javascript"
     assert misconceptions_overcome(failed) == []
-    passed = record_outcome(failed, catalog.graph, MCQ, 1.0, None, None, now + timedelta(hours=1))
+    passed = record_outcome(failed, catalog.graph, MCQ, Outcome(1.0), now + timedelta(hours=1))
     assert misconceptions_overcome(passed) == ["Thinks a"]
     assert len(passed.twin_history) == 1

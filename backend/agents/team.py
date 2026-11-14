@@ -41,6 +41,7 @@ class AgentTeam:
 
     @classmethod
     def build(cls, llm: LLMClient, fallback: LLMClient, models: ModelTiers) -> "AgentTeam":
+        """Create every agent with the live client, the offline fallback and the model tiers."""
         args = (llm, fallback, models)
         return cls(
             question_writer=QuestionWriter(*args),

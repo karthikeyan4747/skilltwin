@@ -3,11 +3,12 @@
 from typing import Any
 
 from fastapi import APIRouter, Request
+from starlette import status
 
 from backend.api.deps import LearnerDep, ServicesDep, SessionDep, limiter, llm_rate_limit
 from backend.api.errors import AppError
 from backend.api.schemas import MAX_SCREENSHOT_BYTES, MentorRequest
-from backend.services.images import InvalidImage, sanitize_screenshot
+from backend.services.images import InvalidImageError, sanitize_screenshot
 
 router = APIRouter(prefix="/mentor", tags=["AI Mentor"])
 
@@ -26,9 +27,11 @@ async def chat(
     if body.screenshot_b64:
         try:
             screenshot = sanitize_screenshot(body.screenshot_b64, MAX_SCREENSHOT_BYTES)
-        except InvalidImage as exc:
+        except InvalidImageError as exc:
             raise AppError(
-                422, "invalid_image", "Screenshot must be a JPEG or PNG under 1.5 MB."
+                status.HTTP_422_UNPROCESSABLE_CONTENT,
+                "invalid_image",
+                "Screenshot must be a JPEG or PNG under 1.5 MB.",
             ) from exc
     updated, result = await services.orchestrator.mentor_chat(learner, body.message, screenshot)
     services.repo.save_learner(session_id, updated)

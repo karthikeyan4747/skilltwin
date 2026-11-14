@@ -43,6 +43,7 @@ def readiness(role: Role, statuses: dict[str, SkillStatus]) -> Readiness:
 
 
 def rank_roles(roles: list[Role], statuses: dict[str, SkillStatus]) -> list[Readiness]:
+    """All roles ordered by proven readiness, highest first (ties by role id)."""
     ranked = [readiness(role, statuses) for role in roles]
     return sorted(ranked, key=lambda r: (-r.proven_pct, r.role_id))
 

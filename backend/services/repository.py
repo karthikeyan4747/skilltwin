@@ -50,6 +50,7 @@ class Repository:
             self._conn.executescript(SCHEMA)
 
     def get_learner(self, session_id: str) -> Learner | None:
+        """This session's learner, or None on first visit."""
         with self._lock:
             row = self._conn.execute(
                 "SELECT data FROM learners WHERE session_id = ?", (session_id,)
@@ -57,6 +58,7 @@ class Repository:
         return Learner.model_validate_json(row[0]) if row else None
 
     def save_learner(self, session_id: str, learner: Learner) -> None:
+        """Insert or replace the session's learner document."""
         with self._lock, self._conn:
             self._conn.execute(
                 "INSERT INTO learners (session_id, data) VALUES (?, ?) "
@@ -65,6 +67,7 @@ class Repository:
             )
 
     def put_question(self, session_id: str, pending: PendingQuestion) -> None:
+        """Store a question with its answer key and Twin prediction until answered."""
         with self._lock, self._conn:
             self._conn.execute(
                 "INSERT OR REPLACE INTO pending_questions (question_id, session_id, data) "
@@ -86,6 +89,7 @@ class Repository:
         return PendingQuestion.model_validate_json(row[0]) if row else None
 
     def add_misconception(self, learner_key: str, skill_id: str, text: str) -> None:
+        """Record an anonymised misconception for cohort insights."""
         with self._lock, self._conn:
             self._conn.execute(
                 "INSERT INTO misconceptions (learner_key, skill_id, text) VALUES (?, ?, ?)",
@@ -93,6 +97,7 @@ class Repository:
             )
 
     def misconception_records(self) -> list[tuple[str, str, str]]:
+        """All live-session misconception records."""
         with self._lock:
             rows = self._conn.execute(
                 "SELECT learner_key, skill_id, text FROM misconceptions"
@@ -100,5 +105,6 @@ class Repository:
         return [(r[0], r[1], r[2]) for r in rows]
 
     def close(self) -> None:
+        """Close the database connection (called on app shutdown)."""
         with self._lock:
             self._conn.close()

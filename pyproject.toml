@@ -41,11 +41,39 @@ line-length = 100
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP", "SIM", "ASYNC", "S", "RUF"]
+select = [
+    "E", "F", "W",  # pycodestyle / pyflakes
+    "I",            # import order
+    "B",            # bugbear
+    "UP",           # modern syntax
+    "SIM", "C4", "PIE", "RET", "PERF", "FURB",  # simplicity and idioms
+    "C90",          # cyclomatic complexity
+    "N",            # naming
+    "PL",           # pylint checks (argument counts, branches, magic values)
+    "ARG",          # unused arguments
+    "FBT",          # no boolean positional arguments
+    "DTZ",          # timezone-aware datetimes
+    "PTH",          # pathlib over os.path
+    "T20",          # no print statements
+    "ERA",          # no commented-out code
+    "LOG", "G",     # logging hygiene
+    "ASYNC",        # async correctness
+    "S",            # security (bandit)
+    "D102", "D103", # docstrings on public methods and functions
+    "RUF",
+]
 ignore = ["S101"]
 
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 6  # keyword-only LLM call settings (agent, system, payload, model, tokens, image)
+
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S"]
+# slowapi's @limiter.limit requires a `request: Request` parameter even when unused.
+"backend/api/routes/*.py" = ["ARG001"]
+"tests/**" = ["S", "D", "PLR2004", "ARG", "FBT", "PLC0415"]
 
 [tool.mypy]
 strict = true

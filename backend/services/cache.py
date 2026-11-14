@@ -13,6 +13,7 @@ class TTLCache:
         self._items: OrderedDict[Hashable, tuple[float, Any]] = OrderedDict()
 
     def get(self, key: Hashable) -> Any | None:
+        """Cached value, or None if missing or expired."""
         entry = self._items.get(key)
         if entry is None:
             return None
@@ -24,6 +25,7 @@ class TTLCache:
         return value
 
     def set(self, key: Hashable, value: Any) -> None:
+        """Store a value, evicting the least recently used entry when full."""
         self._items[key] = (time.monotonic() + self.ttl, value)
         self._items.move_to_end(key)
         while len(self._items) > self.max_items:

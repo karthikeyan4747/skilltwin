@@ -47,4 +47,5 @@ DOCS_HTML, DOCS_CSP = _swagger_page()
 
 @router.get("/docs", response_class=HTMLResponse, include_in_schema=False)
 async def docs() -> HTMLResponse:
+    """Swagger UI with its page-specific, hash-pinned CSP."""
     return HTMLResponse(DOCS_HTML, headers={"Content-Security-Policy": DOCS_CSP})

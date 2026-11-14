@@ -16,6 +16,7 @@ def _relevant_skills(ctx: LearnerContext) -> list[str]:
 
 
 def analysis_view(ctx: LearnerContext) -> dict[str, Any]:
+    """Skill statuses relevant to the learner, strengths, weaknesses and the graph."""
     graph = ctx.catalog.graph
     return {
         "skills": [ctx.statuses[sid].model_dump() for sid in _relevant_skills(ctx)],
@@ -49,6 +50,7 @@ def _better_fit_reason(ctx: LearnerContext) -> str | None:
 
 
 def career_view(ctx: LearnerContext, demand: dict[str, Any]) -> dict[str, Any]:
+    """Target readiness, role ranking, better fit, time to ready and market demand."""
     target = career.readiness(ctx.role, ctx.statuses)
     hours = ctx.learner.profile.hours_per_week
     return {
@@ -68,6 +70,7 @@ def career_view(ctx: LearnerContext, demand: dict[str, Any]) -> dict[str, Any]:
 
 
 def roadmap_view(ctx: LearnerContext) -> dict[str, Any]:
+    """Roadmap steps with resources and reroute history, names resolved for display."""
     plan = ctx.learner.roadmap
     steps = [
         step.model_dump()
@@ -95,6 +98,7 @@ def roadmap_view(ctx: LearnerContext) -> dict[str, Any]:
 
 
 def progress_view(ctx: LearnerContext) -> dict[str, Any]:
+    """Confidence history, assessment history, completion, Twin accuracy, interviews."""
     learner = ctx.learner
     return {
         "confidence_history": [p.model_dump(mode="json") for p in learner.confidence_history],
@@ -134,7 +138,8 @@ def readiness_summary(ctx: LearnerContext) -> dict[str, Any]:
     }
 
 
-def dashboard_view(ctx: LearnerContext, ai_live: bool) -> dict[str, Any]:
+def dashboard_view(ctx: LearnerContext, *, ai_live: bool) -> dict[str, Any]:
+    """Readiness summary plus greeting, verified count, next steps and AI mode."""
     next_steps = [s for s in ctx.learner.roadmap.steps if s.status != "done"][:3]
     return readiness_summary(ctx) | {
         "name": ctx.learner.profile.name,

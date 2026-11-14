@@ -5,6 +5,7 @@ from collections.abc import Awaitable, Callable
 
 from fastapi import Request, Response
 from itsdangerous import BadSignature, URLSafeSerializer
+from starlette import status
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from backend.api.errors import envelope
@@ -40,7 +41,7 @@ CallNext = Callable[[Request], Awaitable[Response]]
 
 
 def session_middleware(
-    secret: str, secure: bool
+    secret: str, *, secure: bool
 ) -> Callable[[Request, CallNext], Awaitable[Response]]:
     """Issue a signed, HttpOnly guest-session cookie on first visit; expose its id on state."""
     signer = URLSafeSerializer(secret, salt="skilltwin-session")
@@ -71,6 +72,7 @@ def session_middleware(
 
 
 async def security_headers(request: Request, call_next: CallNext) -> Response:
+    """Add security headers (unless a route set its own CSP) and cache-control rules."""
     response = await call_next(request)
     for name, value in SECURITY_HEADERS.items():
         response.headers.setdefault(name, value)  # a route may set a stricter-scoped CSP
@@ -90,6 +92,7 @@ class BodySizeLimit:
         self.max_bytes = max_bytes
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """ASGI entry point: reject oversized bodies before the app reads them."""
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
@@ -106,18 +109,20 @@ class BodySizeLimit:
             if message["type"] == "http.request":
                 received += len(message.get("body", b""))
                 if received > self.max_bytes:
-                    raise PayloadTooLarge
+                    raise PayloadTooLargeError
             return message
 
         try:
             await self.app(scope, limited_receive, send)
-        except PayloadTooLarge:
+        except PayloadTooLargeError:
             await self._reject(scope, receive, send)
 
     async def _reject(self, scope: Scope, receive: Receive, send: Send) -> None:
-        response = envelope(413, "payload_too_large", "Request body is too large.")
+        response = envelope(
+            status.HTTP_413_CONTENT_TOO_LARGE, "payload_too_large", "Request body is too large."
+        )
         await response(scope, receive, send)
 
 
-class PayloadTooLarge(Exception):
+class PayloadTooLargeError(Exception):
     pass

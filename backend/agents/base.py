@@ -41,11 +41,13 @@ class AgentTrace:
         self.steps: list[TraceStep] = []
 
     def add(self, agent: str, purpose: str, started: float, mode: Mode) -> None:
+        """Record one agent run with its elapsed time since `started` (perf_counter)."""
         duration = int((time.perf_counter() - started) * 1000)
         self.steps.append(TraceStep(agent=agent, purpose=purpose, duration_ms=duration, mode=mode))
 
     @property
     def offline(self) -> bool:
+        """True if any agent in this flow fell back to the offline MockLLM."""
         return any(step.mode == "offline" for step in self.steps)
 
 
@@ -66,13 +68,16 @@ class Agent[InT: BaseModel, OutT: BaseModel]:
         schema = json.dumps(self.output_model.model_json_schema(), separators=(",", ":"))
         self._system = f"{SAFETY_PREAMBLE}{schema}\n\n{self.instructions}"
 
-    def tier_for(self, inp: InT) -> Tier:
+    def tier_for(self, inp: InT) -> Tier:  # noqa: ARG002 (hook for subclasses)
+        """Model tier for this input; subclasses override to switch tiers per request."""
         return self.tier
 
-    def image_for(self, inp: InT) -> str | None:
+    def image_for(self, inp: InT) -> str | None:  # noqa: ARG002 (hook for subclasses)
+        """Optional base64 JPEG sent with the request; only vision-capable agents override."""
         return None
 
     def payload(self, inp: InT) -> dict[str, Any]:
+        """JSON payload sent to the model as delimited learner data."""
         return inp.model_dump(mode="json")
 
     async def run(self, inp: InT, trace: AgentTrace | None = None) -> OutT:

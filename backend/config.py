@@ -40,4 +40,5 @@ class Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
+    """Process-wide settings, read from the environment once."""
     return Settings()

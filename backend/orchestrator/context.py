@@ -34,24 +34,30 @@ class LearnerContext:
         self.better_fit = career.better_fit(ranking, self.role.id)
 
     def name(self, skill_id: str) -> str:
+        """Display name of a skill."""
         return self.catalog.graph.name(skill_id)
 
     def names(self, skill_ids: list[str]) -> list[str]:
+        """Display names for skill ids, order preserved."""
         return [self.name(s) for s in skill_ids]
 
     def misconceptions_for(self, skill_id: str) -> list[str]:
+        """Distinct misconceptions recorded for a skill, oldest first."""
         texts = [m.text for m in self.learner.misconceptions if m.skill_id == skill_id]
         return list(dict.fromkeys(texts))
 
     def recent_scores(self, skill_id: str) -> list[float]:
+        """Most recent evidence scores for a skill."""
         scores = [e.score for e in self.learner.evidence if e.skill_id == skill_id]
         return scores[-RECENT_LIMIT:]
 
     def next_step_names(self, limit: int = 3) -> list[str]:
+        """Names of the next unfinished roadmap steps."""
         open_steps = [s.skill_id for s in self.learner.roadmap.steps if s.status != "done"]
         return self.names(open_steps[:limit])
 
     def career_input(self) -> CareerIn:
+        """Brief for the Career agent: ranking, better fit and verified skills."""
         return CareerIn(
             target_role=self.role.title,
             ranking=[
@@ -63,6 +69,7 @@ class LearnerContext:
         )
 
     def twin_input(self, question: Question) -> TwinPredictIn:
+        """Brief for the Twin: question, answer key, wrong answers and learner history."""
         return TwinPredictIn(
             skill_name=self.name(question.skill_id),
             question=question.prompt,
@@ -75,6 +82,7 @@ class LearnerContext:
         )
 
     def twin_respond_input(self, skill_id: str, ticket: str, rubric: list[str]) -> TwinRespondIn:
+        """Brief for the Twin to answer a work ticket at the learner's level."""
         return TwinRespondIn(
             skill_name=self.name(skill_id),
             ticket=ticket,
@@ -84,6 +92,7 @@ class LearnerContext:
         )
 
     def mentor_input(self, message: str, screenshot_b64: str | None) -> MentorIn:
+        """Brief for the Mentor: roadmap, strengths, weaknesses and recent results."""
         recent = [
             f"{self.name(a.skill_id)} {a.type}: {'passed' if a.correct else 'failed'}"
             for a in self.learner.assessments[-RECENT_LIMIT:]
@@ -106,6 +115,7 @@ class LearnerContext:
         )
 
     def publisher_input(self) -> PublisherIn:
+        """Brief for the Publisher built only from recorded evidence."""
         proven = career.readiness(self.role, self.statuses).proven_pct
         done = [s.skill_id for s in self.learner.roadmap.steps if s.status == "done"]
         return PublisherIn(

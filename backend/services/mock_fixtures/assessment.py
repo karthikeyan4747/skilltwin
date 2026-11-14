@@ -6,6 +6,7 @@ from backend.agents.assessor import GraderIn, QuestionWriterIn
 from backend.agents.diagnostic import DiagnosticIn
 from backend.agents.observer import ObserverIn
 from backend.agents.twin import TwinPredictIn, TwinRespondIn
+from backend.core.analysis import PASS_SCORE
 from backend.core.twin import baseline_prediction
 
 Payload = dict[str, Any]
@@ -13,6 +14,7 @@ FLUENCY_WORDS = 30
 
 
 def rubric_coverage(answer: str, rubric: list[str]) -> tuple[float, list[str]]:
+    """Share of rubric points mentioned in the answer, and the missed points."""
     text = answer.lower()
     missed = [point for point in rubric if point.lower() not in text]
     if not rubric:
@@ -21,6 +23,7 @@ def rubric_coverage(answer: str, rubric: list[str]) -> tuple[float, list[str]]:
 
 
 def question_writer(payload: Payload) -> Payload:
+    """Reuse the bank example as the 'written' question."""
     example = QuestionWriterIn.model_validate(payload).example
     return example.model_dump(
         include={"prompt", "options", "answer_index", "code", "expected_output", "rubric"}
@@ -28,6 +31,7 @@ def question_writer(payload: Payload) -> Payload:
 
 
 def grader(payload: Payload) -> Payload:
+    """Concept score from rubric coverage; fluency from length only."""
     inp = GraderIn.model_validate(payload)
     score, missed = rubric_coverage(inp.answer, inp.rubric)
     fluency = min(1.0, len(inp.answer.split()) / FLUENCY_WORDS)
@@ -45,17 +49,19 @@ def grader(payload: Payload) -> Payload:
 
 
 def observer(payload: Payload) -> Payload:
+    """Known distractor misconception, else the first missed rubric point."""
     inp = ObserverIn.model_validate(payload)
     if inp.score >= 1:
         return {"misconception": None}
     if inp.known_distractor_misconception:
         return {"misconception": inp.known_distractor_misconception}
-    if inp.missed_points and inp.score < 0.5:
+    if inp.missed_points and inp.score < PASS_SCORE:
         return {"misconception": f"Overlooks {inp.missed_points[0]} in {inp.skill_name}"}
     return {"misconception": None}
 
 
 def diagnostic(payload: Payload) -> Payload:
+    """Templated explanation of the core-computed root cause."""
     inp = DiagnosticIn.model_validate(payload)
     conf = inp.confidences.get(inp.root_cause, 0.0)
     if inp.root_cause == inp.failed_skill:
@@ -76,6 +82,7 @@ def diagnostic(payload: Payload) -> Payload:
 
 
 def twin_predictor(payload: Payload) -> Payload:
+    """Baseline Twin rule: confidence and known misconceptions decide."""
     inp = TwinPredictIn.model_validate(payload)
     correct = baseline_prediction(inp.confidence, inp.misconceptions)
     if correct:
@@ -97,6 +104,7 @@ def twin_predictor(payload: Payload) -> Payload:
 
 
 def twin_responder(payload: Payload) -> Payload:
+    """Answer covering as many rubric points as the learner's confidence suggests."""
     inp = TwinRespondIn.model_validate(payload)
     known = inp.rubric[: round(len(inp.rubric) * min(max(inp.confidence, 0.0), 1.0))]
     if not known:

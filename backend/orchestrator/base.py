@@ -18,6 +18,7 @@ RANKING_TTL_SECONDS = 3600
 
 
 def utc_now() -> datetime:
+    """Timezone-aware current time; injected as the orchestrator clock."""
     return datetime.now(UTC)
 
 
@@ -33,6 +34,7 @@ class OrchestratorBase:
         self._graph_hash = catalog.graph.fingerprint()
 
     def context(self, learner: Learner) -> LearnerContext:
+        """Snapshot of derived learner state (statuses, ranking) at the current time."""
         now = self.clock()
         statuses = analysis.analyze_skills(
             self.catalog.graph, learner.profile.claimed_skills, learner.evidence, now

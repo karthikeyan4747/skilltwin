@@ -50,9 +50,11 @@ class SkillGraph:
         return skill_id in self.skills
 
     def name(self, skill_id: str) -> str:
+        """Display name of a skill."""
         return self.skills[skill_id].name
 
     def prerequisites(self, skill_id: str) -> list[str]:
+        """Direct prerequisites of a skill."""
         return list(self.skills[skill_id].prerequisites)
 
     def ancestors(self, skill_id: str) -> set[str]:

@@ -36,6 +36,7 @@ class JobDemandService:
         self._cache = TTLCache(DEMAND_TTL_SECONDS, max_items=32)
 
     async def demand(self, role: Role) -> DemandReport:
+        """Job-posting counts per role skill, cached; live from Adzuna when configured."""
         cached: DemandReport | None = self._cache.get(role.id)
         if cached is not None:
             return cached

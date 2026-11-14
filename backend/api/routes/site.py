@@ -25,11 +25,13 @@ def sample_summary_html(services: Services) -> str:
 
 
 def ai_mode(services: Services) -> str:
+    """'live' when a Groq key is configured, otherwise 'offline' (MockLLM)."""
     return "live" if services.ai_live else "offline"
 
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def index(request: Request) -> HTMLResponse:
+    """App shell with the sample-scenario summary rendered on the server."""
     return HTMLResponse(render_index(request.app.state.index_summary, str(request.base_url)))
 
 

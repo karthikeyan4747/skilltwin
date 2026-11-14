@@ -61,6 +61,7 @@ ROUTERS = (
 
 
 def build_services(settings: Settings, llm: LLMClient | None = None) -> Services:
+    """Wire catalog, repository, agents (live client or MockLLM) and job demand."""
     catalog = load_catalog()
     mock = MockLLM(MOCK_FIXTURES)
     if llm is None and settings.groq_api_key:
@@ -84,6 +85,7 @@ def build_services(settings: Settings, llm: LLMClient | None = None) -> Services
 
 
 def create_app(settings: Settings | None = None, llm: LLMClient | None = None) -> FastAPI:
+    """Application factory: services, middleware, routers, pages and static files."""
     settings = settings or get_settings()
     logging.basicConfig(level=logging.INFO)
     services = build_services(settings, llm)

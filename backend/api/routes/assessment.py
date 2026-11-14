@@ -3,6 +3,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Request
+from starlette import status
 
 from backend.api.deps import (
     LearnerDep,
@@ -57,7 +58,11 @@ async def submit_answer(
     """Adaptation trigger: a failed answer reroutes the roadmap to its root cause."""
     pending = services.repo.pop_question(session_id, body.question_id)
     if pending is None:
-        raise AppError(404, "question_not_found", "This question expired. Start a new one.")
+        raise AppError(
+            status.HTTP_404_NOT_FOUND,
+            "question_not_found",
+            "This question expired. Start a new one.",
+        )
     answer = Answer(
         text=body.text,
         choice=body.choice,

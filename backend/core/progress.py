@@ -1,5 +1,6 @@
 """Progress Tracking: recording evidence and assessment outcomes on the learner."""
 
+from dataclasses import dataclass
 from datetime import datetime
 
 from backend.core.analysis import PASS_SCORE, VERIFIED_THRESHOLD, analyze_skills
@@ -16,20 +17,25 @@ from backend.core.skill_graph import SkillGraph
 
 
 def confidence_of(learner: Learner, graph: SkillGraph, skill_id: str, now: datetime) -> float:
+    """Current evidence-based confidence for one skill."""
     statuses = analyze_skills(graph, learner.profile.claimed_skills, learner.evidence, now)
     return statuses[skill_id].confidence
 
 
+@dataclass(frozen=True)
+class Outcome:
+    """A graded answer: its score, the Twin's prediction (if any) and any misconception."""
+
+    score: float
+    predicted_correct: bool | None = None
+    misconception: str | None = None
+
+
 def record_outcome(
-    learner: Learner,
-    graph: SkillGraph,
-    question: Question,
-    score: float,
-    predicted_correct: bool | None,
-    misconception: str | None,
-    now: datetime,
+    learner: Learner, graph: SkillGraph, question: Question, outcome: Outcome, now: datetime
 ) -> Learner:
     """Append evidence, assessment, twin record, misconception and a confidence data point."""
+    score, misconception = outcome.score, outcome.misconception
     evidence = Evidence(skill_id=question.skill_id, type=question.type, score=score, timestamp=now)
     correct = score >= PASS_SCORE
     updated = learner.model_copy(
@@ -48,11 +54,11 @@ def record_outcome(
             ],
         }
     )
-    if predicted_correct is not None:
+    if outcome.predicted_correct is not None:
         record = TwinRecord(
             question_id=question.id,
             skill_id=question.skill_id,
-            predicted_correct=predicted_correct,
+            predicted_correct=outcome.predicted_correct,
             actual_correct=correct,
         )
         updated.twin_history = [*updated.twin_history, record]

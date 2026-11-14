@@ -26,12 +26,15 @@ class Catalog:
     seed: dict[str, Any]
 
     def questions_for(self, skill_id: str) -> list[Question]:
+        """Bank questions for a skill."""
         return [q for q in self.questions if q.skill_id == skill_id]
 
     def seed_profile(self) -> Profile:
+        """Profile of the sample-scenario learner."""
         return Profile.model_validate(self.seed["sample_learner"]["profile"])
 
     def seed_evidence(self, now: datetime) -> list[Evidence]:
+        """Seeded evidence with timestamps relative to `now`."""
         return [
             Evidence(
                 skill_id=item["skill_id"],
@@ -54,6 +57,7 @@ class Catalog:
         )
 
     def cohort_records(self) -> list[tuple[str, str, str]]:
+        """Anonymised (learner, skill, misconception) records for the seeded cohort."""
         return [
             (member["learner"], m["skill_id"], m["text"])
             for member in self.seed["cohort"]

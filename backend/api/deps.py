@@ -7,6 +7,7 @@ from typing import Annotated
 from fastapi import Depends, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from starlette import status
 
 from backend.agents.base import ModelTiers
 from backend.api.errors import AppError
@@ -44,15 +45,18 @@ def configure_llm_rate_limit(value: str) -> None:
 
 
 def llm_rate_limit() -> str:
+    """Current LLM route limit (e.g. '20/minute'); read on every request by slowapi."""
     return _llm_limit["value"]
 
 
 def get_services(request: Request) -> Services:
+    """Shared services created at startup by the app factory."""
     services: Services = request.app.state.services
     return services
 
 
 def get_session_id(request: Request) -> str:
+    """Guest session id set by the session middleware."""
     session_id: str = request.state.session_id
     return session_id
 
@@ -81,12 +85,18 @@ LearnerDep = Annotated[Learner, Depends(get_learner)]
 
 
 def require_skill(catalog: Catalog, skill_id: str) -> str:
+    """Return the skill id, or raise a 404 error envelope if it is not in the catalog."""
     if skill_id not in catalog.graph:
-        raise AppError(404, "unknown_skill", "That skill is not in the catalog.")
+        raise AppError(
+            status.HTTP_404_NOT_FOUND, "unknown_skill", "That skill is not in the catalog."
+        )
     return skill_id
 
 
 def require_role(catalog: Catalog, role_id: str) -> str:
+    """Return the role id, or raise a 404 error envelope if it is not in the catalog."""
     if role_id not in catalog.roles:
-        raise AppError(404, "unknown_role", "That job role is not in the catalog.")
+        raise AppError(
+            status.HTTP_404_NOT_FOUND, "unknown_role", "That job role is not in the catalog."
+        )
     return role_id

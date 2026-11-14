@@ -28,7 +28,7 @@ def gap_skills(graph: SkillGraph, role: Role, statuses: dict[str, SkillStatus]) 
     return graph.topological(sid for sid in needed if not statuses[sid].verified)
 
 
-def _reason(sid: str, graph: SkillGraph, role: Role, status: SkillStatus) -> str:
+def _reason(sid: str, role: Role, status: SkillStatus) -> str:
     if sid not in role.skills:
         return f"Prerequisite for {role.title} skills; not yet verified."
     weight = f"{role.skills[sid]:.0%} of {role.title} readiness"
@@ -46,10 +46,11 @@ def _hours(graph: SkillGraph, status: SkillStatus) -> float:
 
 
 def build_roadmap(graph: SkillGraph, role: Role, statuses: dict[str, SkillStatus]) -> Roadmap:
+    """Ordered gap steps for a role with a deterministic reason and hour estimate each."""
     steps = [
         RoadmapStep(
             skill_id=sid,
-            reason=_reason(sid, graph, role, statuses[sid]),
+            reason=_reason(sid, role, statuses[sid]),
             est_hours=_hours(graph, statuses[sid]),
         )
         for sid in gap_skills(graph, role, statuses)
@@ -96,6 +97,7 @@ def reroute(
 def set_step_status(
     roadmap: Roadmap, skill_id: str, status: StepStatus, actual_hours: float | None = None
 ) -> Roadmap:
+    """Update one step's status and actual hours; raises KeyError if it is not on the roadmap."""
     if not any(s.skill_id == skill_id for s in roadmap.steps):
         raise KeyError(skill_id)
     steps = [
@@ -108,6 +110,7 @@ def set_step_status(
 
 
 def completion_pct(roadmap: Roadmap) -> float:
+    """Percentage of steps marked done (100 for an empty roadmap)."""
     if not roadmap.steps:
         return 100.0
     done = sum(1 for s in roadmap.steps if s.status == "done")
@@ -115,6 +118,7 @@ def completion_pct(roadmap: Roadmap) -> float:
 
 
 def remaining_hours(roadmap: Roadmap) -> float:
+    """Estimated hours left across steps that are not done."""
     return round(sum(s.est_hours for s in roadmap.steps if s.status != "done"), 1)
 
 
@@ -129,6 +133,7 @@ def measured_velocity(roadmap: Roadmap) -> float:
 
 
 def time_to_ready_weeks(roadmap: Roadmap, hours_per_week: float) -> float:
+    """Weeks to finish the roadmap at the learner's weekly hours and measured pace."""
     effective = hours_per_week * measured_velocity(roadmap)
     return round(remaining_hours(roadmap) / effective, 1)
 
@@ -169,4 +174,5 @@ def prioritize(
 
 
 def log_event(roadmap: Roadmap, event: RerouteEvent) -> Roadmap:
+    """Append a reroute event to the roadmap history."""
     return roadmap.model_copy(update={"reroutes": [*roadmap.reroutes, event]})

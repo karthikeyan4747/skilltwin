@@ -101,6 +101,7 @@ def render_summary(summary: dict[str, Any]) -> str:
 
 
 def render_index(summary_html: str, base_url: str) -> str:
+    """Fill the app shell template with the server-rendered summary."""
     return _template("index.html").substitute(
         summary=summary_html, description=escape(DESCRIPTION), base_url=escape(base_url)
     )
@@ -113,6 +114,7 @@ def _cell_list(items: list[str] | tuple[str, ...]) -> str:
 def render_about(
     app: FastAPI, roster: list[AgentProfile], version: str, ai_mode: str, base_url: str
 ) -> str:
+    """Render /about: features, API endpoints, code, tests and the agent roster."""
     endpoints = endpoints_by_tag(app)
     feature_rows = "".join(
         "<tr>"
