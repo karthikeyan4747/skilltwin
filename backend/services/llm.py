@@ -10,7 +10,7 @@ import httpx
 Fixture = Callable[[dict[str, Any]], dict[str, Any]]
 DATA_OPEN = "<learner_data>"
 DATA_CLOSE = "</learner_data>"
-REASONING_HEADROOM_TOKENS = 1024
+REASONING_HEADROOM_TOKENS = 384
 LOW_EFFORT_REASONING_PREFIX = "openai/gpt-oss"
 
 
