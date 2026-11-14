@@ -1,0 +1,18 @@
+[
+  {"id": "html", "name": "HTML", "category": "Frontend", "prerequisites": [], "est_hours": 10},
+  {"id": "css", "name": "CSS", "category": "Frontend", "prerequisites": ["html"], "est_hours": 14},
+  {"id": "javascript", "name": "JavaScript", "category": "Frontend", "prerequisites": ["css"], "est_hours": 30},
+  {"id": "react", "name": "React", "category": "Frontend", "prerequisites": ["javascript"], "est_hours": 24},
+  {"id": "typescript", "name": "TypeScript", "category": "Frontend", "prerequisites": ["javascript"], "est_hours": 12},
+  {"id": "nodejs", "name": "Node.js", "category": "Backend", "prerequisites": ["javascript"], "est_hours": 18},
+  {"id": "express", "name": "Express", "category": "Backend", "prerequisites": ["nodejs"], "est_hours": 10},
+  {"id": "rest_apis", "name": "REST APIs", "category": "Backend", "prerequisites": [], "est_hours": 8},
+  {"id": "python", "name": "Python", "category": "Programming", "prerequisites": [], "est_hours": 30},
+  {"id": "pandas", "name": "Pandas", "category": "Data", "prerequisites": ["python"], "est_hours": 16},
+  {"id": "data_pipelines", "name": "Data Pipelines", "category": "Data", "prerequisites": ["pandas"], "est_hours": 20},
+  {"id": "sql", "name": "SQL", "category": "Data", "prerequisites": [], "est_hours": 16},
+  {"id": "databases", "name": "Databases", "category": "Data", "prerequisites": ["sql"], "est_hours": 14},
+  {"id": "git", "name": "Git", "category": "Tooling", "prerequisites": [], "est_hours": 6},
+  {"id": "testing", "name": "Testing", "category": "Tooling", "prerequisites": [], "est_hours": 10},
+  {"id": "docker", "name": "Docker", "category": "Tooling", "prerequisites": [], "est_hours": 10}
+]

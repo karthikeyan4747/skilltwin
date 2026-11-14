@@ -1,0 +1,37 @@
+[
+  {
+    "id": "full_stack_developer",
+    "title": "Full Stack Developer",
+    "description": "Builds web applications end to end: browser UI, server APIs and data storage.",
+    "skills": {"html": 0.08, "css": 0.08, "javascript": 0.18, "react": 0.16, "nodejs": 0.14, "express": 0.08, "sql": 0.1, "rest_apis": 0.08, "git": 0.05, "testing": 0.05},
+    "demand": {"html": 5200, "css": 5000, "javascript": 9800, "react": 8700, "nodejs": 7400, "express": 3900, "sql": 8100, "rest_apis": 6200, "git": 7000, "testing": 4300}
+  },
+  {
+    "id": "frontend_developer",
+    "title": "Frontend Developer",
+    "description": "Builds accessible, responsive user interfaces for the web.",
+    "skills": {"html": 0.15, "css": 0.15, "javascript": 0.25, "react": 0.2, "typescript": 0.1, "git": 0.05, "testing": 0.1},
+    "demand": {"html": 5200, "css": 5000, "javascript": 9800, "react": 8700, "typescript": 6100, "git": 7000, "testing": 4300}
+  },
+  {
+    "id": "backend_developer",
+    "title": "Backend Developer",
+    "description": "Designs server-side services, APIs and databases.",
+    "skills": {"python": 0.2, "nodejs": 0.15, "sql": 0.2, "databases": 0.15, "rest_apis": 0.15, "docker": 0.05, "git": 0.05, "testing": 0.05},
+    "demand": {"python": 9100, "nodejs": 7400, "sql": 8100, "databases": 5600, "rest_apis": 6200, "docker": 5900, "git": 7000, "testing": 4300}
+  },
+  {
+    "id": "data_analyst",
+    "title": "Data Analyst",
+    "description": "Turns raw data into answers with SQL, Python and analysis libraries.",
+    "skills": {"python": 0.3, "sql": 0.35, "pandas": 0.25, "git": 0.1},
+    "demand": {"python": 9100, "sql": 8100, "pandas": 4800, "git": 7000}
+  },
+  {
+    "id": "data_engineer",
+    "title": "Data Engineer",
+    "description": "Builds reliable pipelines that move and transform data at scale.",
+    "skills": {"python": 0.2, "sql": 0.2, "pandas": 0.1, "data_pipelines": 0.2, "databases": 0.15, "docker": 0.1, "git": 0.05},
+    "demand": {"python": 9100, "sql": 8100, "pandas": 4800, "data_pipelines": 3600, "databases": 5600, "docker": 5900, "git": 7000}
+  }
+]

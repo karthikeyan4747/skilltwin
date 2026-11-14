@@ -1,0 +1,13 @@
+{
+  "snippets": [
+    {"id": "loop-sum", "title": "Summing a list with a loop", "skill_id": "python", "code": "numbers = [3, 1, 4]\ntotal = 0\nfor n in numbers:\n    total = total + n\nprint(total)\n"},
+    {"id": "list-alias", "title": "Two names, one list", "skill_id": "python", "code": "a = [1, 2]\nb = a\nb.append(3)\nprint(a)\n"},
+    {"id": "function-call", "title": "Calling a function", "skill_id": "python", "code": "def square(x):\n    result = x * x\n    return result\n\nvalue = square(4)\nprint(value)\n"},
+    {"id": "while-countdown", "title": "While loop countdown", "skill_id": "python", "code": "count = 3\nwhile count > 0:\n    print(count)\n    count -= 1\nprint('lift off')\n"}
+  ],
+  "grid_levels": [
+    {"id": "straight", "title": "Straight to the goal", "start": [0, 0], "goal": [4, 0], "walls": [], "hint": "Call move(\"right\") four times, or use a for loop."},
+    {"id": "around-wall", "title": "Around the wall", "start": [0, 2], "goal": [4, 2], "walls": [[2, 1], [2, 2], [2, 3]], "hint": "Go up or down first, then right, then back."},
+    {"id": "zigzag", "title": "Zigzag maze", "start": [0, 0], "goal": [4, 4], "walls": [[1, 0], [1, 1], [1, 2], [3, 2], [3, 3], [3, 4]], "hint": "Write a helper function that repeats a move n times."}
+  ]
+}

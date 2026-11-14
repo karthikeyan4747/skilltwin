@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SkillTwin – evidence-verified learning paths</title>
+    <meta
+      name="description"
+      content="Agentic AI learning platform: verify skills with evidence, match careers, follow an adaptive roadmap with a Learner Twin."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/tokens.css" />
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <script type="module" src="/js/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+      <header class="sidebar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">ST</span>
+          <span>SkillTwin</span>
+        </div>
+        <span id="ai-mode" class="badge badge-warn" hidden>⚠ Offline AI mode</span>
+        <button
+          class="btn btn-secondary nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-nav"
+        >
+          Menu
+        </button>
+        <nav id="primary-nav" aria-label="Main" data-open="false">
+          <ul class="nav-list">
+            <li><a href="#/dashboard">Dashboard</a></li>
+            <li><a href="#/profile">Profile</a></li>
+            <li><a href="#/analysis">Skill Analysis</a></li>
+            <li><a href="#/career">Career Matching</a></li>
+            <li><a href="#/assessment">Assessment</a></li>
+            <li><a href="#/lessons">Lessons</a></li>
+            <li><a href="#/roadmap">Roadmap</a></li>
+            <li><a href="#/progress">Progress</a></li>
+            <li><a href="#/mentor">AI Mentor</a></li>
+            <li><a href="#/publish">Learn in Public</a></li>
+            <li><a href="#/insights">Insights</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main id="main" class="main" tabindex="-1">
+        <div id="view" class="content"></div>
+      </main>
+    </div>
+    <div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>
+    <div id="announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>

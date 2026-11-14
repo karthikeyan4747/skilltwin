@@ -1,0 +1,546 @@
+{
+ "sample_learner": {
+  "profile": {
+   "name": "Sam Rivera",
+   "education": "B.Sc. Computer Science (final year)",
+   "hours_per_week": 10,
+   "claimed_skills": [
+    "python",
+    "sql",
+    "html"
+   ],
+   "certifications": [
+    "Python for Everybody"
+   ],
+   "projects": [
+    "Expense tracker CLI in Python",
+    "SQL reporting queries for a college fest"
+   ],
+   "career_goal": "full_stack_developer"
+  },
+  "evidence": [
+   {
+    "skill_id": "python",
+    "type": "mcq",
+    "score": 0.9,
+    "days_ago": 6
+   },
+   {
+    "skill_id": "python",
+    "type": "code_exercise",
+    "score": 0.85,
+    "days_ago": 5
+   },
+   {
+    "skill_id": "sql",
+    "type": "mcq",
+    "score": 0.8,
+    "days_ago": 4
+   },
+   {
+    "skill_id": "sql",
+    "type": "predict_output",
+    "score": 0.9,
+    "days_ago": 3
+   }
+  ]
+ },
+ "cohort": [
+  {
+   "learner": "cohort-01",
+   "misconceptions": [
+    {
+     "skill_id": "javascript",
+     "text": "Thinks map mutates nothing and returns the original"
+    },
+    {
+     "skill_id": "css",
+     "text": "Thinks more classes always beat an id"
+    },
+    {
+     "skill_id": "react",
+     "text": "Thinks state updates apply immediately within a handler"
+    },
+    {
+     "skill_id": "git",
+     "text": "Thinks staging tracks later edits automatically"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-02",
+   "misconceptions": [
+    {
+     "skill_id": "html",
+     "text": "Confuses section with the main landmark"
+    },
+    {
+     "skill_id": "html",
+     "text": "Thinks body is a navigable landmark"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Assumes code runs strictly top to bottom"
+    },
+    {
+     "skill_id": "css",
+     "text": "Assumes width includes padding and border"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-03",
+   "misconceptions": [
+    {
+     "skill_id": "javascript",
+     "text": "Forgets join returns a string"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks timers run before promise microtasks"
+    },
+    {
+     "skill_id": "html",
+     "text": "Confuses section with the main landmark"
+    },
+    {
+     "skill_id": "pandas",
+     "text": "Thinks filter selects rows by condition"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-04",
+   "misconceptions": [
+    {
+     "skill_id": "css",
+     "text": "Assumes width includes padding and border"
+    },
+    {
+     "skill_id": "html",
+     "text": "Confuses section with the main landmark"
+    },
+    {
+     "skill_id": "html",
+     "text": "Thinks body is a navigable landmark"
+    },
+    {
+     "skill_id": "rest_apis",
+     "text": "Uses 200 for resource creation"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-05",
+   "misconceptions": [
+    {
+     "skill_id": "react",
+     "text": "Thinks state setters do not trigger re-renders"
+    },
+    {
+     "skill_id": "html",
+     "text": "Thinks body is a navigable landmark"
+    },
+    {
+     "skill_id": "css",
+     "text": "Forgets borders add to the box width"
+    },
+    {
+     "skill_id": "css",
+     "text": "Thinks more element selectors increase specificity most"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-06",
+   "misconceptions": [
+    {
+     "skill_id": "nodejs",
+     "text": "Assumes code runs strictly top to bottom"
+    },
+    {
+     "skill_id": "react",
+     "text": "Thinks state setters do not trigger re-renders"
+    },
+    {
+     "skill_id": "html",
+     "text": "Confuses section with the main landmark"
+    },
+    {
+     "skill_id": "sql",
+     "text": "Thinks WHERE can filter aggregated values"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-07",
+   "misconceptions": [
+    {
+     "skill_id": "html",
+     "text": "Thinks an unclosed li element is dropped"
+    },
+    {
+     "skill_id": "css",
+     "text": "Forgets borders add to the box width"
+    },
+    {
+     "skill_id": "python",
+     "text": "Thinks mutable defaults are disallowed"
+    },
+    {
+     "skill_id": "git",
+     "text": "Rewrites shared history with reset"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-08",
+   "misconceptions": [
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks timers run before promise microtasks"
+    },
+    {
+     "skill_id": "html",
+     "text": "Confuses section with the main landmark"
+    },
+    {
+     "skill_id": "react",
+     "text": "Thinks state updates apply immediately within a handler"
+    },
+    {
+     "skill_id": "html",
+     "text": "Thinks an unclosed li element is dropped"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-09",
+   "misconceptions": [
+    {
+     "skill_id": "css",
+     "text": "Forgets borders add to the box width"
+    },
+    {
+     "skill_id": "html",
+     "text": "Confuses section with the main landmark"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Assumes code runs strictly top to bottom"
+    },
+    {
+     "skill_id": "javascript",
+     "text": "Assumes typeof reports null as its own type"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-10",
+   "misconceptions": [
+    {
+     "skill_id": "javascript",
+     "text": "Confuses null with undefined"
+    },
+    {
+     "skill_id": "react",
+     "text": "Thinks state setters do not trigger re-renders"
+    },
+    {
+     "skill_id": "css",
+     "text": "Thinks more classes always beat an id"
+    },
+    {
+     "skill_id": "data_pipelines",
+     "text": "Confuses idempotency with performance"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-11",
+   "misconceptions": [
+    {
+     "skill_id": "html",
+     "text": "Thinks an unclosed li element is dropped"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks timers run before promise microtasks"
+    },
+    {
+     "skill_id": "javascript",
+     "text": "Confuses null with undefined"
+    },
+    {
+     "skill_id": "data_pipelines",
+     "text": "Ignores dependencies when scheduling"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-12",
+   "misconceptions": [
+    {
+     "skill_id": "python",
+     "text": "Thinks assignment copies a list"
+    },
+    {
+     "skill_id": "css",
+     "text": "Thinks more element selectors increase specificity most"
+    },
+    {
+     "skill_id": "html",
+     "text": "Thinks an unclosed li element is dropped"
+    },
+    {
+     "skill_id": "sql",
+     "text": "Thinks COUNT(column) counts NULLs"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-13",
+   "misconceptions": [
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks timers run before promise microtasks"
+    },
+    {
+     "skill_id": "python",
+     "text": "Thinks mutable defaults are disallowed"
+    },
+    {
+     "skill_id": "css",
+     "text": "Assumes width includes padding and border"
+    },
+    {
+     "skill_id": "express",
+     "text": "Thinks return values control middleware flow"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-14",
+   "misconceptions": [
+    {
+     "skill_id": "html",
+     "text": "Thinks an unclosed li element is dropped"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Assumes code runs strictly top to bottom"
+    },
+    {
+     "skill_id": "sql",
+     "text": "Thinks WHERE can filter aggregated values"
+    },
+    {
+     "skill_id": "css",
+     "text": "Thinks more classes always beat an id"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-15",
+   "misconceptions": [
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks timers run before promise microtasks"
+    },
+    {
+     "skill_id": "html",
+     "text": "Confuses section with the main landmark"
+    },
+    {
+     "skill_id": "python",
+     "text": "Thinks default arguments are re-created per call"
+    },
+    {
+     "skill_id": "react",
+     "text": "Thinks state setters do not trigger re-renders"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-16",
+   "misconceptions": [
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks Node runs each request on its own thread"
+    },
+    {
+     "skill_id": "python",
+     "text": "Thinks assignment copies a list"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Assumes code runs strictly top to bottom"
+    },
+    {
+     "skill_id": "rest_apis",
+     "text": "Uses 200 for resource creation"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-17",
+   "misconceptions": [
+    {
+     "skill_id": "javascript",
+     "text": "Thinks map mutates nothing and returns the original"
+    },
+    {
+     "skill_id": "react",
+     "text": "Thinks an empty dependency array disables the effect"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks timers run before promise microtasks"
+    },
+    {
+     "skill_id": "python",
+     "text": "Thinks mutable defaults are disallowed"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-18",
+   "misconceptions": [
+    {
+     "skill_id": "javascript",
+     "text": "Forgets join returns a string"
+    },
+    {
+     "skill_id": "javascript",
+     "text": "Confuses null with undefined"
+    },
+    {
+     "skill_id": "css",
+     "text": "Forgets borders add to the box width"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-19",
+   "misconceptions": [
+    {
+     "skill_id": "sql",
+     "text": "Thinks WHERE can filter aggregated values"
+    },
+    {
+     "skill_id": "css",
+     "text": "Forgets borders add to the box width"
+    },
+    {
+     "skill_id": "html",
+     "text": "Thinks body is a navigable landmark"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-20",
+   "misconceptions": [
+    {
+     "skill_id": "javascript",
+     "text": "Confuses null with undefined"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks Node parallelises JavaScript automatically"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks Node runs each request on its own thread"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks timers run before promise microtasks"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-21",
+   "misconceptions": [
+    {
+     "skill_id": "sql",
+     "text": "Thinks COUNT(column) counts NULLs"
+    },
+    {
+     "skill_id": "react",
+     "text": "Thinks an empty dependency array disables the effect"
+    },
+    {
+     "skill_id": "javascript",
+     "text": "Confuses null with undefined"
+    },
+    {
+     "skill_id": "databases",
+     "text": "Confuses isolation with referential integrity"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-22",
+   "misconceptions": [
+    {
+     "skill_id": "html",
+     "text": "Thinks body is a navigable landmark"
+    },
+    {
+     "skill_id": "html",
+     "text": "Thinks an unclosed li element is dropped"
+    },
+    {
+     "skill_id": "nodejs",
+     "text": "Thinks Node parallelises JavaScript automatically"
+    },
+    {
+     "skill_id": "rest_apis",
+     "text": "Confuses partial and full updates"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-23",
+   "misconceptions": [
+    {
+     "skill_id": "css",
+     "text": "Thinks more element selectors increase specificity most"
+    },
+    {
+     "skill_id": "javascript",
+     "text": "Thinks map mutates nothing and returns the original"
+    },
+    {
+     "skill_id": "css",
+     "text": "Thinks more classes always beat an id"
+    },
+    {
+     "skill_id": "pandas",
+     "text": "Confuses a boolean mask with the filtered frame"
+    }
+   ]
+  },
+  {
+   "learner": "cohort-24",
+   "misconceptions": [
+    {
+     "skill_id": "react",
+     "text": "Thinks state setters do not trigger re-renders"
+    },
+    {
+     "skill_id": "html",
+     "text": "Confuses section with the main landmark"
+    },
+    {
+     "skill_id": "python",
+     "text": "Thinks assignment copies a list"
+    },
+    {
+     "skill_id": "css",
+     "text": "Thinks more classes always beat an id"
+    }
+   ]
+  }
+ ]
+}

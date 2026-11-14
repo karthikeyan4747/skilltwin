@@ -1,0 +1,82 @@
+{
+  "html": [
+    {"kind": "course", "title": "Responsive Web Design", "url": "https://www.freecodecamp.org/learn/2022/responsive-web-design/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "Structuring content with HTML", "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content", "provider": "MDN"},
+    {"kind": "exercise", "title": "Foundations: HTML projects", "url": "https://www.theodinproject.com/paths/foundations/courses/foundations", "provider": "The Odin Project"}
+  ],
+  "css": [
+    {"kind": "course", "title": "Responsive Web Design", "url": "https://www.freecodecamp.org/learn/2022/responsive-web-design/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "CSS styling basics", "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics", "provider": "MDN"},
+    {"kind": "exercise", "title": "Flexbox Froggy", "url": "https://flexboxfroggy.com/", "provider": "Codepip"}
+  ],
+  "javascript": [
+    {"kind": "course", "title": "JavaScript Algorithms and Data Structures", "url": "https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures-v8/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "JavaScript Guide", "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", "provider": "MDN"},
+    {"kind": "exercise", "title": "JavaScript course projects", "url": "https://www.theodinproject.com/paths/full-stack-javascript/courses/javascript", "provider": "The Odin Project"}
+  ],
+  "react": [
+    {"kind": "course", "title": "Learn React", "url": "https://react.dev/learn", "provider": "React docs"},
+    {"kind": "tutorial", "title": "Tutorial: Tic-Tac-Toe", "url": "https://react.dev/learn/tutorial-tic-tac-toe", "provider": "React docs"},
+    {"kind": "exercise", "title": "Front End Development Libraries", "url": "https://www.freecodecamp.org/learn/front-end-development-libraries/", "provider": "freeCodeCamp"}
+  ],
+  "typescript": [
+    {"kind": "course", "title": "The TypeScript Handbook", "url": "https://www.typescriptlang.org/docs/handbook/intro.html", "provider": "TypeScript docs"},
+    {"kind": "tutorial", "title": "TypeScript for JavaScript Programmers", "url": "https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html", "provider": "TypeScript docs"},
+    {"kind": "exercise", "title": "TypeScript Playground", "url": "https://www.typescriptlang.org/play", "provider": "TypeScript docs"}
+  ],
+  "nodejs": [
+    {"kind": "course", "title": "NodeJS course", "url": "https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs", "provider": "The Odin Project"},
+    {"kind": "tutorial", "title": "Introduction to Node.js", "url": "https://nodejs.org/en/learn/getting-started/introduction-to-nodejs", "provider": "Node.js docs"},
+    {"kind": "exercise", "title": "Back End Development and APIs", "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/", "provider": "freeCodeCamp"}
+  ],
+  "express": [
+    {"kind": "course", "title": "Express web framework (Node.js)", "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs", "provider": "MDN"},
+    {"kind": "tutorial", "title": "Express Hello World", "url": "https://expressjs.com/en/starter/hello-world.html", "provider": "Express docs"},
+    {"kind": "exercise", "title": "Back End Development and APIs", "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/", "provider": "freeCodeCamp"}
+  ],
+  "rest_apis": [
+    {"kind": "course", "title": "Back End Development and APIs", "url": "https://www.freecodecamp.org/learn/back-end-development-and-apis/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "An overview of HTTP", "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview", "provider": "MDN"},
+    {"kind": "exercise", "title": "FastAPI tutorial", "url": "https://fastapi.tiangolo.com/tutorial/", "provider": "FastAPI docs"}
+  ],
+  "python": [
+    {"kind": "course", "title": "Scientific Computing with Python", "url": "https://www.freecodecamp.org/learn/scientific-computing-with-python/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "The Python Tutorial", "url": "https://docs.python.org/3/tutorial/", "provider": "Python docs"},
+    {"kind": "exercise", "title": "Python track", "url": "https://exercism.org/tracks/python", "provider": "Exercism"}
+  ],
+  "pandas": [
+    {"kind": "course", "title": "Data Analysis with Python", "url": "https://www.freecodecamp.org/learn/data-analysis-with-python/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "10 minutes to pandas", "url": "https://pandas.pydata.org/docs/user_guide/10min.html", "provider": "pandas docs"},
+    {"kind": "exercise", "title": "Pandas micro-course", "url": "https://www.kaggle.com/learn/pandas", "provider": "Kaggle Learn"}
+  ],
+  "data_pipelines": [
+    {"kind": "course", "title": "Data Engineering Zoomcamp", "url": "https://github.com/DataTalksClub/data-engineering-zoomcamp", "provider": "DataTalks.Club"},
+    {"kind": "tutorial", "title": "Airflow fundamentals tutorial", "url": "https://airflow.apache.org/docs/apache-airflow/stable/tutorial/fundamentals.html", "provider": "Apache Airflow docs"},
+    {"kind": "exercise", "title": "Zoomcamp homework", "url": "https://github.com/DataTalksClub/data-engineering-zoomcamp", "provider": "DataTalks.Club"}
+  ],
+  "sql": [
+    {"kind": "course", "title": "Relational Database", "url": "https://www.freecodecamp.org/learn/relational-database/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "The SQL Language tutorial", "url": "https://www.postgresql.org/docs/current/tutorial-sql.html", "provider": "PostgreSQL docs"},
+    {"kind": "exercise", "title": "SQLBolt interactive lessons", "url": "https://sqlbolt.com/", "provider": "SQLBolt"}
+  ],
+  "databases": [
+    {"kind": "course", "title": "Relational Database", "url": "https://www.freecodecamp.org/learn/relational-database/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "PostgreSQL tutorial", "url": "https://www.postgresql.org/docs/current/tutorial.html", "provider": "PostgreSQL docs"},
+    {"kind": "exercise", "title": "PostgreSQL exercises", "url": "https://pgexercises.com/", "provider": "PGExercises"}
+  ],
+  "git": [
+    {"kind": "course", "title": "Pro Git book", "url": "https://git-scm.com/book/en/v2", "provider": "git-scm.com"},
+    {"kind": "tutorial", "title": "Git basics", "url": "https://www.theodinproject.com/lessons/foundations-git-basics", "provider": "The Odin Project"},
+    {"kind": "exercise", "title": "Learn Git Branching", "url": "https://learngitbranching.js.org/", "provider": "Learn Git Branching"}
+  ],
+  "testing": [
+    {"kind": "course", "title": "Quality Assurance", "url": "https://www.freecodecamp.org/learn/quality-assurance/", "provider": "freeCodeCamp"},
+    {"kind": "tutorial", "title": "Get started with pytest", "url": "https://docs.pytest.org/en/stable/getting-started.html", "provider": "pytest docs"},
+    {"kind": "exercise", "title": "Jest getting started", "url": "https://jestjs.io/docs/getting-started", "provider": "Jest docs"}
+  ],
+  "docker": [
+    {"kind": "course", "title": "Docker workshop", "url": "https://docs.docker.com/get-started/workshop/", "provider": "Docker docs"},
+    {"kind": "tutorial", "title": "Get started with Docker", "url": "https://docs.docker.com/get-started/", "provider": "Docker docs"},
+    {"kind": "exercise", "title": "Play with Docker", "url": "https://labs.play-with-docker.com/", "provider": "Docker"}
+  ]
+}
