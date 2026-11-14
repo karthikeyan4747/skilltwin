@@ -8,7 +8,9 @@ const recorded = [];
 
 self.move = (direction) => {
   if (!DIRECTIONS.has(direction)) {
-    throw new Error(`move() expects "up", "down", "left" or "right", not ${JSON.stringify(direction)}`);
+    throw new Error(
+      `move() expects "up", "down", "left" or "right", not ${JSON.stringify(direction)}`,
+    );
   }
   if (recorded.length >= MAX_MOVES) throw new Error(`Too many moves (max ${MAX_MOVES}).`);
   recorded.push(direction);
@@ -16,9 +18,22 @@ self.move = (direction) => {
 
 const send = self.postMessage.bind(self);
 self.__finish = () => send({ ok: true, moves: recorded });
-self.__fail = (error) => send({ ok: false, error: String(error?.message || error), moves: recorded });
+self.__fail = (error) =>
+  send({ ok: false, error: String(error?.message || error), moves: recorded });
 
-for (const name of ["fetch", "XMLHttpRequest", "WebSocket", "EventSource", "importScripts", "indexedDB", "caches", "BroadcastChannel", "Worker", "SharedWorker", "postMessage"]) {
+for (const name of [
+  "fetch",
+  "XMLHttpRequest",
+  "WebSocket",
+  "EventSource",
+  "importScripts",
+  "indexedDB",
+  "caches",
+  "BroadcastChannel",
+  "Worker",
+  "SharedWorker",
+  "postMessage",
+]) {
   try {
     Object.defineProperty(self, name, { value: undefined, writable: false, configurable: false });
   } catch {

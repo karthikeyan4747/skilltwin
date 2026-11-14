@@ -3,9 +3,28 @@ import { append, el } from "./ui.js";
 
 export function tabs(label, items) {
   const list = el("div", { class: "tablist", role: "tablist", "aria-label": label });
-  const panels = items.map((item) => el("div", { role: "tabpanel", id: `panel-${item.id}`, "aria-labelledby": `tab-${item.id}`, tabindex: "0", hidden: true }));
+  const panels = items.map((item) =>
+    el("div", {
+      role: "tabpanel",
+      id: `panel-${item.id}`,
+      "aria-labelledby": `tab-${item.id}`,
+      tabindex: "0",
+      hidden: true,
+    }),
+  );
   const buttons = items.map((item, i) =>
-    el("button", { class: "tab", role: "tab", id: `tab-${item.id}`, "aria-controls": `panel-${item.id}`, type: "button", onClick: () => select(i) }, item.label),
+    el(
+      "button",
+      {
+        class: "tab",
+        role: "tab",
+        id: `tab-${item.id}`,
+        "aria-controls": `panel-${item.id}`,
+        type: "button",
+        onClick: () => select(i),
+      },
+      item.label,
+    ),
   );
   function select(index, focus = false) {
     buttons.forEach((btn, i) => {
@@ -22,7 +41,12 @@ export function tabs(label, items) {
   }
   list.addEventListener("keydown", (event) => {
     const current = buttons.indexOf(document.activeElement);
-    const moves = { ArrowRight: 1, ArrowLeft: -1, Home: -current, End: buttons.length - 1 - current };
+    const moves = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      Home: -current,
+      End: buttons.length - 1 - current,
+    };
     if (current < 0 || !(event.key in moves)) return;
     event.preventDefault();
     select((current + moves[event.key] + buttons.length) % buttons.length, true);

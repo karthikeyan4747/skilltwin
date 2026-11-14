@@ -25,7 +25,12 @@ async function request(method, path, body) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     const err = data.error || {};
-    throw new ApiError(response.status, err.code || "error", err.message || "Request failed.", err.fields);
+    throw new ApiError(
+      response.status,
+      err.code || "error",
+      err.message || "Request failed.",
+      err.fields,
+    );
   }
   if (typeof data.offline_ai === "boolean") setState({ aiOffline: data.offline_ai });
   if (data.ai_mode) setState({ aiOffline: data.ai_mode === "offline" });

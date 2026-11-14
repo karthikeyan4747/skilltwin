@@ -2,8 +2,13 @@
   "name": "skilltwin",
   "private": true,
   "type": "module",
-  "description": "Frontend unit tests only: the UI is vanilla ES modules with no build step or runtime dependencies.",
+  "description": "Frontend tooling only (tests and formatting): the UI is vanilla ES modules with no build step or runtime dependencies.",
   "scripts": {
-    "test": "node --test tests/frontend/*.test.js"
+    "test": "node --test tests/frontend/*.test.js",
+    "format": "prettier --write frontend tests/frontend",
+    "format:check": "prettier --check frontend tests/frontend"
+  },
+  "devDependencies": {
+    "prettier": "3.3.3"
   }
 }

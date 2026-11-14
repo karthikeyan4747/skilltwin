@@ -6,7 +6,9 @@ import { test } from "node:test";
 import { simulate } from "../../frontend/js/grid.js";
 
 const read = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
-const levels = Object.fromEntries(read("../../backend/data/lessons.json").grid_levels.map((l) => [l.id, l]));
+const levels = Object.fromEntries(
+  read("../../backend/data/lessons.json").grid_levels.map((l) => [l.id, l]),
+);
 const cases = read("../fixtures/grid_cases.json");
 
 for (const { level, moves, solved } of cases) {

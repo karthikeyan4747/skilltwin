@@ -9,3 +9,4 @@ htmlcov/
 .env
 *.egg-info/
 .claude/
+node_modules/

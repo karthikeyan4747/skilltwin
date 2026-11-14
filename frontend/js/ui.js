@@ -1,5 +1,4 @@
 // Reusable, accessible UI components. All text is set with textContent, never innerHTML.
-
 export function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
@@ -23,15 +22,27 @@ export function append(node, children) {
 }
 
 export const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export const pct = (value) => `${Math.round(value)}%`;
+
 export const conf = (value) => `${Math.round(value * 100)}%`;
 
 export function pageHead(title, intro, ...actions) {
-  return el("div", { class: "page-head" }, el("div", {}, el("h1", { text: title }), intro && el("p", { text: intro })), actions.length ? el("div", { class: "row" }, actions) : null);
+  return el(
+    "div",
+    { class: "page-head" },
+    el("div", {}, el("h1", { text: title }), intro && el("p", { text: intro })),
+    actions.length ? el("div", { class: "row" }, actions) : null,
+  );
 }
 
 export function card(title, ...children) {
-  return el("section", { class: "card" }, title ? el("h2", { class: "card-title", text: title }) : null, children);
+  return el(
+    "section",
+    { class: "card" },
+    title ? el("h2", { class: "card-title", text: title }) : null,
+    children,
+  );
 }
 
 export function subcard(title, ...children) {
@@ -47,7 +58,10 @@ export async function withLoading(btn, task) {
   const original = [...btn.childNodes];
   btn.setAttribute("aria-busy", "true");
   btn.disabled = true;
-  btn.replaceChildren(el("span", { class: "spinner", "aria-hidden": "true" }), el("span", { text: "Working…" }));
+  btn.replaceChildren(
+    el("span", { class: "spinner", "aria-hidden": "true" }),
+    el("span", { text: "Working…" }),
+  );
   try {
     return await task();
   } finally {
@@ -70,12 +84,29 @@ export function progressBar(label, fraction, { verified = false, valueText } = {
     "div",
     { class: "progress" },
     el("div", { class: "progress-label" }, el("span", { text: label }), el("span", { text })),
-    el("div", { class: "progress-track", role: "progressbar", "aria-label": label, "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(value * 100)), "aria-valuetext": text }, fill),
+    el(
+      "div",
+      {
+        class: "progress-track",
+        role: "progressbar",
+        "aria-label": label,
+        "aria-valuemin": "0",
+        "aria-valuemax": "100",
+        "aria-valuenow": String(Math.round(value * 100)),
+        "aria-valuetext": text,
+      },
+      fill,
+    ),
   );
 }
 
 export function stat(value, label) {
-  return el("div", { class: "card stat" }, el("span", { class: "stat-value", text: value }), el("span", { class: "stat-label", text: label }));
+  return el(
+    "div",
+    { class: "card stat" },
+    el("span", { class: "stat-value", text: value }),
+    el("span", { class: "stat-label", text: label }),
+  );
 }
 
 export function announce(text) {
@@ -90,43 +121,33 @@ export function toast(message, tone = "info") {
   window.setTimeout(() => node.remove(), 5000);
 }
 
-export function modal({ title, body, confirmLabel = "Confirm", onConfirm }) {
-  const previous = document.activeElement;
-  const heading = el("h2", { id: "modal-title", text: title });
-  const cancel = button("Cancel", { variant: "secondary", onClick: () => close() });
-  const confirm = button(confirmLabel, { onClick: () => withLoading(confirm, async () => { await onConfirm(); close(); }).catch((e) => toast(e.message, "error")) });
-  const dialog = el("div", { class: "modal", role: "dialog", "aria-modal": "true", "aria-labelledby": "modal-title" }, heading, body, el("div", { class: "row" }, confirm, cancel));
-  const backdrop = el("div", { class: "modal-backdrop" }, dialog);
-  function close() {
-    backdrop.remove();
-    document.removeEventListener("keydown", onKey);
-    previous?.focus();
-  }
-  function onKey(event) {
-    if (event.key === "Escape") close();
-    if (event.key !== "Tab") return;
-    const focusable = [...dialog.querySelectorAll("button, a[href], input, select, textarea")].filter((n) => !n.disabled);
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-  }
-  document.addEventListener("keydown", onKey);
-  document.body.append(backdrop);
-  confirm.focus();
-}
-
 export function emptyState(title, text, action) {
-  return el("div", { class: "empty" }, el("h2", { class: "card-title", text: title }), el("p", { class: "muted", text }), action);
+  return el(
+    "div",
+    { class: "empty" },
+    el("h2", { class: "card-title", text: title }),
+    el("p", { class: "muted", text }),
+    action,
+  );
 }
 
 export function skeleton(lines = 4) {
-  return el("div", { class: "skeleton", role: "status", "aria-label": "Loading" }, Array.from({ length: lines }, () => el("div", { class: "skeleton-line" })));
+  return el(
+    "div",
+    { class: "skeleton", role: "status", "aria-label": "Loading" },
+    Array.from({ length: lines }, () => el("div", { class: "skeleton-line" })),
+  );
 }
 
 export function renderError(root, error, retry) {
   root.replaceChildren(
-    el("div", { class: "error-state", role: "alert" }, el("h2", { class: "card-title", text: "Something went wrong" }), el("p", { text: error.message || "Please try again." }), button("Retry", { onClick: retry })),
+    el(
+      "div",
+      { class: "error-state", role: "alert" },
+      el("h2", { class: "card-title", text: "Something went wrong" }),
+      el("p", { text: error.message || "Please try again." }),
+      button("Retry", { onClick: retry }),
+    ),
   );
 }
 
@@ -147,25 +168,31 @@ export function agentTrace(steps) {
     "details",
     { class: "trace" },
     el("summary", { text: "How the agents worked together" }),
-    el("ol", {}, steps.map((s) => el("li", {}, el("strong", { text: s.agent }), ` — ${s.purpose} `, el("span", { class: "muted small", text: `(${s.duration_ms} ms, ${s.mode === "live" ? "live AI" : "offline AI"})` })))),
+    el(
+      "ol",
+      {},
+      steps.map((s) =>
+        el(
+          "li",
+          {},
+          el("strong", { text: s.agent }),
+          ` — ${s.purpose} `,
+          el("span", {
+            class: "muted small",
+            text: `(${s.duration_ms} ms, ${s.mode === "live" ? "live AI" : "offline AI"})`,
+          }),
+        ),
+      ),
+    ),
   );
 }
 
-export function showFieldErrors(form, fields = {}) {
-  form.querySelectorAll(".field-error").forEach((n) => n.remove());
-  form.querySelectorAll("[aria-invalid]").forEach((n) => n.removeAttribute("aria-invalid"));
-  for (const [name, message] of Object.entries(fields)) {
-    const input = form.querySelector(`[name="${name.split(".")[0]}"]`);
-    if (!input) continue;
-    const id = `${input.id}-error`;
-    input.setAttribute("aria-invalid", "true");
-    input.setAttribute("aria-describedby", id);
-    input.closest(".field")?.append(el("p", { class: "field-error", id, text: message }));
-  }
-}
-
 export function stepStatusBadge(status) {
-  const map = { done: ["✓ Done", "success"], in_progress: ["◐ In progress", "accent"], todo: ["○ To do", ""] };
+  const map = {
+    done: ["✓ Done", "success"],
+    in_progress: ["◐ In progress", "accent"],
+    todo: ["○ To do", ""],
+  };
   const [text, tone] = map[status];
   return badge(text, tone);
 }

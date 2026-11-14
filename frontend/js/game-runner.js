@@ -13,7 +13,10 @@ export function runGameCode(code) {
       URL.revokeObjectURL(url);
       resolve(result);
     };
-    const timer = window.setTimeout(() => finish({ ok: false, error: "Stopped: your code ran longer than 1 s.", moves: [] }), TIMEOUT_MS);
+    const timer = window.setTimeout(
+      () => finish({ ok: false, error: "Stopped: your code ran longer than 1 s.", moves: [] }),
+      TIMEOUT_MS,
+    );
     worker.onmessage = ({ data }) => finish(data);
     worker.onerror = (event) => {
       event.preventDefault();

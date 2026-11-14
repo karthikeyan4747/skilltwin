@@ -36,7 +36,9 @@
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  transition: background var(--duration), border-color var(--duration);
+  transition:
+    background var(--duration),
+    border-color var(--duration);
 }
 
 .btn-primary {
@@ -273,7 +275,12 @@ form > .btn {
 .skeleton-line {
   height: 16px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, var(--color-surface-2), var(--color-border), var(--color-surface-2));
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2),
+    var(--color-border),
+    var(--color-surface-2)
+  );
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }

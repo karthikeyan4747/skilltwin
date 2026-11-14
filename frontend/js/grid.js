@@ -17,4 +17,3 @@ export function simulate(level, moves) {
   }
   return path;
 }
-
