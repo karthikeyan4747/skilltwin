@@ -283,3 +283,28 @@ svg {
     scroll-behavior: auto !important;
   }
 }
+
+/* Server-rendered pages (About) */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.plain-inline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plain-inline a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  padding: 0 var(--space-2);
+}

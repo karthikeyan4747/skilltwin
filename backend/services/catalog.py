@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from backend.core.grid import GridLevel
-from backend.core.models import Evidence, Profile, Question, Resource, Role, Skill
+from backend.core.models import Evidence, Learner, Profile, Question, Resource, Roadmap, Role, Skill
+from backend.core.progress import confidence_trail
 from backend.core.skill_graph import SkillGraph
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -40,6 +41,17 @@ class Catalog:
             )
             for item in self.seed["sample_learner"]["evidence"]
         ]
+
+    def sample_learner(self, now: datetime) -> Learner:
+        """A fresh copy of the sample-scenario learner (Python, SQL, basic HTML -> Full Stack)."""
+        profile = self.seed_profile()
+        evidence = self.seed_evidence(now)
+        return Learner(
+            profile=profile,
+            evidence=evidence,
+            roadmap=Roadmap(role_id=profile.career_goal),
+            confidence_history=confidence_trail(self.graph, profile.claimed_skills, evidence),
+        )
 
     def cohort_records(self) -> list[tuple[str, str, str]]:
         return [

@@ -86,3 +86,15 @@ class MentorResult(FlowResult):
 class PublishResult(FlowResult):
     linkedin_post: str
     learning_log_md: str
+
+
+class ScenarioStage(BaseModel):
+    title: str
+    summary: str
+    agent_trace: list[TraceStep]
+
+
+class SampleScenarioResult(FlowResult):
+    stages: list[ScenarioStage]
+    answer: AnswerResult
+    goal: GoalChangeResult

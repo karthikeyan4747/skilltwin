@@ -14,7 +14,8 @@ validated against a Pydantic schema before the core consumes it.
 | Agents | `backend/agents/` | One specialised agent per file: typed input/output, prompt as a module constant | core models, `services/llm.py` protocol |
 | Services | `backend/services/` | LLM clients (Groq + MockLLM), SQLite repository, TTL cache, job-demand lookup, catalog loader, image sanitiser | core |
 | Orchestrator | `backend/orchestrator/` | The only place agents collaborate; composes core + agents into named flows | core, agents, services |
-| API | `backend/api/` | FastAPI routes, request schemas, session/security middleware, error envelope, presenters | orchestrator, services |
+| API | `backend/api/` | FastAPI routes, request schemas, session/security middleware, error envelope, presenters, server-rendered pages (`/`, `/about`, `/docs`) | orchestrator, services |
+| Registry | `backend/registry.py` | Each feature mapped to its UI route, API tag, code and tests; read by `/about`, `/api/v1/meta` and `tests/test_docs_consistency.py` | none |
 | Frontend | `frontend/` | Semantic HTML, CSS tokens, vanilla ES modules, Web Workers | REST API |
 
 ```mermaid
@@ -46,6 +47,7 @@ All flows live in `backend/orchestrator/` and return an `agent_trace`
 | `twin_interview` | `coaching.py` | Interviewer → (Learner Twin responder → Assessor grader) × n, at most 4 concurrently | `topological` |
 | `mentor_chat` | `coaching.py` | AI Mentor | `prioritize` |
 | `publish_draft` | `coaching.py` | Publisher | `misconceptions_overcome`, `readiness` |
+| `sample_scenario` | `scenario.py` | onboard → next_question → submit_answer (wrong on purpose) → change_goal | everything above |
 
 `‖` means the calls run concurrently with `asyncio.gather`.
 
@@ -100,6 +102,15 @@ flowchart TD
 - Confidence = recency-weighted (14-day half-life) and type-weighted mean of scores.
 - Capped at 0.6 unless the skill has at least two distinct evidence types.
 - Verified at confidence ≥ 0.7. Claimed without evidence = 0.2; unclaimed without evidence = 0.
+
+## Server-rendered pages
+
+`/` is rendered from `backend/templates/index.html`. Its content area holds the sample-scenario
+result computed by the core at startup (no LLM), the six required features with links, and the
+two adaptation loops, so the page is meaningful before or without JavaScript. The JavaScript
+router replaces that content with the interactive view. `/about` lists every feature with its
+UI route, the API endpoints read from the app's OpenAPI schema, the implementing files and
+tests, and the agent roster read from `AgentTeam.roster()`. `/api/v1/meta` returns the same as JSON.
 
 ## Data and state
 

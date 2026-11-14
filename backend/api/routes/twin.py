@@ -17,7 +17,7 @@ from backend.api.schemas import InterviewRequest
 router = APIRouter(prefix="/twin", tags=["Learner Twin"])
 
 
-@router.post("/interviews")
+@router.post("/interviews", summary="Run Learner Twin interviews")
 @limiter.limit(llm_rate_limit)
 async def run_interviews(
     request: Request,
@@ -26,6 +26,9 @@ async def run_interviews(
     services: ServicesDep,
     session_id: SessionDep,
 ) -> dict[str, Any]:
+    """The Interviewer writes work tickets, the Twin answers as the learner and the Assessor
+    grades them.
+    """
     role_id = require_role(services.catalog, body.role_id or learner.profile.career_goal)
     updated, result = await services.orchestrator.twin_interview(learner, role_id, body.count)
     services.repo.save_learner(session_id, updated)

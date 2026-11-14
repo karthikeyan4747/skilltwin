@@ -69,6 +69,10 @@ This document lists every security control in SkillTwin and where it is implemen
   WebAssembly); `worker-src 'self' blob:` (the Grid Game sandbox worker); `connect-src 'self'` and
   the Pyodide CDN; `style-src 'self'`; `object-src 'none'`; `base-uri 'self'`;
   `form-action 'self'`; `frame-ancestors 'none'`. There are no inline scripts or inline styles.
+- `/docs` (Swagger UI, pinned to `swagger-ui-dist@5.17.14`) sends its own page-specific CSP: its
+  single inline bootstrap script is allowed by SHA-256 hash, not `'unsafe-inline'`; inline styles
+  are allowed on that page only, because Swagger UI sets style attributes
+  (`backend/api/routes/docs.py`). Every other response keeps the strict policy above.
 - `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
   `X-Frame-Options: DENY`, `Cross-Origin-Opener-Policy: same-origin`, and a `Permissions-Policy`
   that disables camera, microphone and geolocation and allows display capture only for this origin.
@@ -88,10 +92,16 @@ This document lists every security control in SkillTwin and where it is implemen
   (`backend/core/grid.py`), not by trusting the client. Code-exercise test counts are reported by
   the browser, because the code intentionally never reaches the server.
 
+## Public metadata
+
+- `/health`, `/about` and `/api/v1/meta` expose only the version, whether the LLM is live or
+  offline, model names, features and agents. They never expose keys, settings values or learner data.
+
 ## Output encoding
 
 - The UI renders all model and user text with `textContent` (the `el()` helper in
-  `frontend/js/ui.js`); `innerHTML` is not used anywhere.
+  `frontend/js/ui.js`); `innerHTML` is not used anywhere. Server-rendered pages escape every
+  dynamic value with `html.escape` (`backend/api/pages.py`).
 
 ## Data access and errors
 

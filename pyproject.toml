@@ -1,6 +1,6 @@
 [project]
 name = "skilltwin"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Agentic AI personalized learning platform with evidence-verified skills and a Learner Twin."
 requires-python = ">=3.12"
 dependencies = [
@@ -30,6 +30,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["backend*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "backend.__version__" }
 
 [tool.ruff]
 line-length = 100

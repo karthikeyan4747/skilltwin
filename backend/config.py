@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True, extra="ignore")
 
     env: Literal["dev", "prod"] = "dev"
     groq_api_key: SecretStr | None = None

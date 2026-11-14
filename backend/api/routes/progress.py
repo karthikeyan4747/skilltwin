@@ -10,6 +10,9 @@ from backend.api.presenters import progress_view
 router = APIRouter(prefix="/progress", tags=["Progress Tracking"])
 
 
-@router.get("")
+@router.get("", summary="Progress tracking")
 async def get_progress(learner: LearnerDep, services: ServicesDep) -> dict[str, Any]:
+    """Confidence over time, assessment history, completion %, Twin accuracy and the latest
+    interview batch.
+    """
     return progress_view(services.orchestrator.context(learner))

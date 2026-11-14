@@ -56,7 +56,7 @@ def make_settings(tmp_path: Path, **overrides: object) -> Settings:
         "groq_api_key": None,
     }
     values.update(overrides)
-    return Settings(**values)
+    return Settings(_env_file=None, **values)
 
 
 @pytest.fixture

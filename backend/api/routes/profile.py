@@ -11,8 +11,9 @@ from backend.core.models import Profile
 router = APIRouter(prefix="/profile", tags=["User Profile"])
 
 
-@router.get("")
+@router.get("", summary="Get learner profile")
 async def get_profile(learner: LearnerDep, services: ServicesDep) -> dict[str, Any]:
+    """The session learner's profile plus the skill and role options for the form."""
     catalog = services.catalog
     return {
         "profile": learner.profile.model_dump(),
@@ -21,7 +22,7 @@ async def get_profile(learner: LearnerDep, services: ServicesDep) -> dict[str, A
     }
 
 
-@router.put("")
+@router.put("", summary="Save learner profile")
 @limiter.limit(llm_rate_limit)
 async def save_profile(
     request: Request,

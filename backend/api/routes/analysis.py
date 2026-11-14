@@ -1,4 +1,6 @@
-"""Skill Analysis: evidence-verified skills, strengths, weaknesses and the prerequisite graph."""
+"""Skill Analysis: evidence-verified skills, strengths, weaknesses and the prerequisite
+graph.
+"""
 
 from typing import Any
 
@@ -10,6 +12,7 @@ from backend.api.presenters import analysis_view
 router = APIRouter(prefix="/analysis", tags=["Skill Analysis"])
 
 
-@router.get("")
+@router.get("", summary="Skill analysis")
 async def get_analysis(learner: LearnerDep, services: ServicesDep) -> dict[str, Any]:
+    """Evidence-based status per skill, strengths, weaknesses and the prerequisite graph."""
     return analysis_view(services.orchestrator.context(learner))

@@ -13,12 +13,15 @@ from backend.core.roadmap import set_step_status
 router = APIRouter(prefix="/roadmap", tags=["Learning Recommendations"])
 
 
-@router.get("")
+@router.get("", summary="Learning roadmap")
 async def get_roadmap(learner: LearnerDep, services: ServicesDep) -> dict[str, Any]:
+    """Ordered gap steps with reasons, hours, course/tutorial/exercise resources and reroute
+    history.
+    """
     return roadmap_view(services.orchestrator.context(learner))
 
 
-@router.patch("/steps/{skill_id}")
+@router.patch("/steps/{skill_id}", summary="Update a roadmap step")
 async def update_step(
     skill_id: str,
     body: StepUpdate,
@@ -26,6 +29,7 @@ async def update_step(
     services: ServicesDep,
     session_id: SessionDep,
 ) -> dict[str, Any]:
+    """Set a step's status, optionally with actual hours spent (used to measure pace)."""
     require_skill(services.catalog, skill_id)
     try:
         plan = set_step_status(learner.roadmap, skill_id, body.status, body.actual_hours)

@@ -20,13 +20,14 @@ from backend.orchestrator import Answer
 router = APIRouter(prefix="/assessment", tags=["Assessment"])
 
 
-@router.get("/skills")
+@router.get("/skills", summary="List assessable skills")
 async def assessable_skills(services: ServicesDep) -> list[dict[str, str]]:
+    """Every skill in the catalog, prerequisites first."""
     graph = services.catalog.graph
     return [{"id": sid, "name": graph.name(sid)} for sid in graph.topological(graph.skills)]
 
 
-@router.post("/question")
+@router.post("/question", summary="Get the next question")
 @limiter.limit(llm_rate_limit)
 async def next_question(
     request: Request,
@@ -35,13 +36,16 @@ async def next_question(
     services: ServicesDep,
     session_id: SessionDep,
 ) -> dict[str, Any]:
+    """The Assessor writes a question (types rotate); the Learner Twin's prediction is stored
+    server-side.
+    """
     skill_id = require_skill(services.catalog, body.skill_id)
     pending, result = await services.orchestrator.next_question(learner, skill_id, body.type)
     services.repo.put_question(session_id, pending)
     return result.model_dump(mode="json")
 
 
-@router.post("/answer")
+@router.post("/answer", summary="Submit an answer")
 @limiter.limit(llm_rate_limit)
 async def submit_answer(
     request: Request,

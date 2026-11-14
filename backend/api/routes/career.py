@@ -1,4 +1,6 @@
-"""Career Matching: claimed vs proven readiness, role ranking, goal switch preview and change."""
+"""Career Matching: claimed vs proven readiness, role ranking, goal switch preview and
+change.
+"""
 
 from typing import Any
 
@@ -19,14 +21,17 @@ from backend.core.career import goal_switch
 router = APIRouter(prefix="/career", tags=["Career Matching"])
 
 
-@router.get("")
+@router.get("", summary="Career matching")
 async def get_career(learner: LearnerDep, services: ServicesDep) -> dict[str, Any]:
+    """Target-role readiness, all roles ranked by proven %, better-fit role, time to ready and
+    market demand.
+    """
     ctx = services.orchestrator.context(learner)
     demand = await services.jobs.demand(ctx.role)
     return career_view(ctx, demand.model_dump())
 
 
-@router.post("/preview-goal")
+@router.post("/preview-goal", summary="Preview a goal change")
 async def preview_goal(
     body: GoalRequest, learner: LearnerDep, services: ServicesDep
 ) -> dict[str, Any]:
@@ -41,7 +46,7 @@ async def preview_goal(
     }
 
 
-@router.post("/goal")
+@router.post("/goal", summary="Change career goal")
 @limiter.limit(llm_rate_limit)
 async def change_goal(
     request: Request,

@@ -72,7 +72,8 @@ def session_middleware(
 
 async def security_headers(request: Request, call_next: CallNext) -> Response:
     response = await call_next(request)
-    response.headers.update(SECURITY_HEADERS)
+    for name, value in SECURITY_HEADERS.items():
+        response.headers.setdefault(name, value)  # a route may set a stricter-scoped CSP
     path = request.url.path
     if path.startswith(("/css/", "/js/")) or path == "/":
         response.headers["Cache-Control"] = "no-cache"

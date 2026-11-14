@@ -109,20 +109,36 @@ def progress_view(ctx: LearnerContext) -> dict[str, Any]:
     }
 
 
-def dashboard_view(ctx: LearnerContext, ai_live: bool) -> dict[str, Any]:
+def readiness_summary(ctx: LearnerContext) -> dict[str, Any]:
+    """Claimed vs proven readiness, skill gaps and roadmap order for the learner's target role."""
     plan = ctx.learner.roadmap
     target = career.readiness(ctx.role, ctx.statuses)
-    next_steps = [s for s in plan.steps if s.status != "done"][:3]
+    role_skills = ctx.catalog.graph.topological(ctx.role.skills)
     return {
-        "name": ctx.learner.profile.name,
         "role_title": ctx.role.title,
         "claimed_pct": target.claimed_pct,
         "proven_pct": target.proven_pct,
-        "verified_count": len(ctx.strengths),
+        "verified": ctx.names(ctx.strengths),
+        "missing": ctx.names(
+            [s for s in role_skills if not ctx.statuses[s].claimed and not ctx.statuses[s].verified]
+        ),
+        "unproven": ctx.names(
+            [s for s in role_skills if ctx.statuses[s].claimed and not ctx.statuses[s].verified]
+        ),
+        "roadmap_order": ctx.names([s.skill_id for s in plan.steps]),
         "time_to_ready_weeks": roadmap.time_to_ready_weeks(
             plan, ctx.learner.profile.hours_per_week
         ),
         "twin_accuracy": twin_accuracy(ctx.learner.twin_history),
+        "better_fit": ctx.better_fit.title if ctx.better_fit else None,
+    }
+
+
+def dashboard_view(ctx: LearnerContext, ai_live: bool) -> dict[str, Any]:
+    next_steps = [s for s in ctx.learner.roadmap.steps if s.status != "done"][:3]
+    return readiness_summary(ctx) | {
+        "name": ctx.learner.profile.name,
+        "verified_count": len(ctx.strengths),
         "next_steps": [s.model_dump() | {"skill_name": ctx.name(s.skill_id)} for s in next_steps],
         "ai_mode": "live" if ai_live else "offline",
     }

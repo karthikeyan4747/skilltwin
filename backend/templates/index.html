@@ -4,10 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SkillTwin – evidence-verified learning paths</title>
-    <meta
-      name="description"
-      content="Agentic AI learning platform: verify skills with evidence, match careers, follow an adaptive roadmap with a Learner Twin."
-    />
+    <meta name="description" content="$description" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SkillTwin – evidence-verified learning paths" />
+    <meta property="og:description" content="$description" />
+    <meta property="og:url" content="$base_url" />
+    <meta name="twitter:card" content="summary" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/css/tokens.css" />
     <link rel="stylesheet" href="/css/base.css" />
@@ -44,11 +46,18 @@
             <li><a href="#/mentor">AI Mentor</a></li>
             <li><a href="#/publish">Learn in Public</a></li>
             <li><a href="#/insights">Insights</a></li>
+            <li><a href="/about">About</a></li>
           </ul>
         </nav>
       </header>
       <main id="main" class="main" tabindex="-1">
-        <div id="view" class="content"></div>
+        <noscript>
+          <p class="card banner content">
+            The interactive app needs JavaScript. Everything below is rendered on the server; the
+            <a href="/about">About page</a> and <a href="/docs">API docs</a> also work without it.
+          </p>
+        </noscript>
+        <div id="view" class="content">$summary</div>
       </main>
     </div>
     <div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>

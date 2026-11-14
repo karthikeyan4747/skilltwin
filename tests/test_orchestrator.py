@@ -100,3 +100,14 @@ async def test_publish_uses_only_real_evidence(orchestrator, sample_learner) -> 
     result = await orchestrator.publish_draft(sample_learner)
     assert "Python, SQL" in result.linkedin_post
     assert "## Verified skills" in result.learning_log_md
+
+
+async def test_sample_scenario_runs_both_adaptation_loops(orchestrator, sample_learner) -> None:
+    updated, result = await orchestrator.sample_scenario(sample_learner)
+    assert [s.title[:2] for s in result.stages] == ["1.", "2.", "3."]
+    assert not result.answer.correct and result.answer.diagnosis.root_cause == "html"
+    assert result.goal.switch.to_role == "data_analyst" and result.goal.switch.carryover_pct == 65.0
+    assert updated.profile.career_goal == "data_analyst"
+    triggers = [e.trigger for e in updated.roadmap.reroutes]
+    assert triggers == ["failed_assessment", "goal_change"]
+    assert len(result.agent_trace) == sum(len(s.agent_trace) for s in result.stages)

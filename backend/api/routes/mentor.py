@@ -12,7 +12,7 @@ from backend.services.images import InvalidImage, sanitize_screenshot
 router = APIRouter(prefix="/mentor", tags=["AI Mentor"])
 
 
-@router.post("/chat")
+@router.post("/chat", summary="Chat with the AI Mentor")
 @limiter.limit(llm_rate_limit)
 async def chat(
     request: Request,

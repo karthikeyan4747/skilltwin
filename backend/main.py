@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from backend import __version__
 from backend.agents.base import ModelTiers
 from backend.agents.team import AgentTeam
 from backend.api.deps import Services, configure_llm_rate_limit, limiter
@@ -19,13 +20,17 @@ from backend.api.routes import (
     assessment,
     career,
     dashboard,
+    docs,
     insights,
     lessons,
     mentor,
+    meta,
     profile,
     progress,
     publish,
     roadmap,
+    scenario,
+    site,
     twin,
 )
 from backend.config import Settings, get_settings
@@ -50,6 +55,8 @@ ROUTERS = (
     lessons,
     publish,
     insights,
+    scenario,
+    meta,
 )
 
 
@@ -71,6 +78,7 @@ def build_services(settings: Settings, llm: LLMClient | None = None) -> Services
         repo=Repository(settings.database_path),
         orchestrator=Orchestrator(catalog, AgentTeam.build(llm, mock, models)),
         jobs=JobDemandService(settings.adzuna_app_id, adzuna_key, catalog.graph),
+        models=models,
         ai_live=llm.live,
     )
 
@@ -88,10 +96,14 @@ def create_app(settings: Settings | None = None, llm: LLMClient | None = None) -
     app = FastAPI(
         lifespan=lifespan,
         title="SkillTwin API",
-        version="1.0.0",
-        description="Agentic AI personalized learning platform with evidence-verified skills.",
-        docs_url="/api/docs",
-        openapi_url="/api/openapi.json",
+        version=__version__,
+        description=(
+            "Agentic AI personalized learning platform: evidence-verified skills, career "
+            "matching, adaptive roadmaps and a Learner Twin. All learner endpoints are scoped "
+            "to a signed guest-session cookie issued on the first request."
+        ),
+        docs_url=None,
+        openapi_url="/openapi.json",
         redoc_url=None,
     )
     app.state.services = services
@@ -108,11 +120,9 @@ def create_app(settings: Settings | None = None, llm: LLMClient | None = None) -
 
     for module in ROUTERS:
         app.include_router(module.router, prefix="/api/v1")
+    app.include_router(site.router)
+    app.include_router(docs.router)
+    app.state.index_summary = site.sample_summary_html(services)
 
-    @app.get("/healthz", include_in_schema=False)
-    @app.get("/health", include_in_schema=False)  # Cloud Run reserves paths ending in "z"
-    async def health() -> dict[str, str]:
-        return {"status": "ok"}
-
-    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR), name="frontend")
     return app

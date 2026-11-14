@@ -14,15 +14,16 @@ router = APIRouter(prefix="/lessons", tags=["Lessons"])
 GRID_SKILL = "javascript"
 
 
-@router.get("")
+@router.get("", summary="List lessons")
 async def get_lessons(services: ServicesDep) -> dict[str, Any]:
+    """Code Visualizer snippets and Grid Game levels."""
     return {
         "snippets": services.catalog.snippets,
         "grid_levels": [g.model_dump() for g in services.catalog.grid_levels.values()],
     }
 
 
-@router.post("/grid-result")
+@router.post("/grid-result", summary="Submit a Grid Game result")
 async def grid_result(
     body: GridResult, learner: LearnerDep, services: ServicesDep, session_id: SessionDep
 ) -> dict[str, Any]:

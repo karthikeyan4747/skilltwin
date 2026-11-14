@@ -8,10 +8,10 @@ from fastapi import Depends, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+from backend.agents.base import ModelTiers
 from backend.api.errors import AppError
 from backend.config import Settings
-from backend.core.models import Learner, Roadmap
-from backend.core.progress import confidence_trail
+from backend.core.models import Learner
 from backend.orchestrator import Orchestrator
 from backend.services.catalog import Catalog
 from backend.services.jobs import JobDemandService
@@ -25,6 +25,7 @@ class Services:
     repo: Repository
     orchestrator: Orchestrator
     jobs: JobDemandService
+    models: ModelTiers
     ai_live: bool
 
 
@@ -68,16 +69,7 @@ async def get_learner(services: ServicesDep, session_id: SessionDep) -> Learner:
     learner = services.repo.get_learner(session_id)
     if learner is not None:
         return learner
-    catalog = services.catalog
-    now = services.orchestrator.clock()
-    profile = catalog.seed_profile()
-    evidence = catalog.seed_evidence(now)
-    seeded = Learner(
-        profile=profile,
-        evidence=evidence,
-        roadmap=Roadmap(role_id=profile.career_goal),
-        confidence_history=confidence_trail(catalog.graph, profile.claimed_skills, evidence),
-    )
+    seeded = services.catalog.sample_learner(services.orchestrator.clock())
     learner, _ = await services.orchestrator.onboard(seeded)
     services.repo.save_learner(session_id, learner)
     return learner

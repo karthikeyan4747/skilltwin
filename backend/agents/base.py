@@ -53,6 +53,7 @@ class Agent[InT: BaseModel, OutT: BaseModel]:
     key: ClassVar[str]
     purpose: ClassVar[str]
     tier: ClassVar[Tier]
+    extra_tiers: ClassVar[tuple[Tier, ...]] = ()
     instructions: ClassVar[str]
     max_tokens: ClassVar[int]
     output_model: type[OutT]

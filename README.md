@@ -1,56 +1,45 @@
 # SkillTwin
 
-**An agentic AI learning platform where skills are verified by evidence, not self-reported, and a
-Learner Twin predicts your answers before you submit them.**
+[![CI](https://github.com/karthikeyan4747/skilltwin/actions/workflows/ci.yml/badge.svg)](https://github.com/karthikeyan4747/skilltwin/actions/workflows/ci.yml)
 
-- **Live demo:** https://skilltwin-616974575902.asia-south1.run.app
-- **Chosen vertical:** Education & Career Development
-- **API docs:** `/api/docs` (OpenAPI) · **Health:** `/health` (also `/healthz` locally; Cloud Run reserves paths ending in `z`)
+SkillTwin is an AI learning platform for universities and employers. It works out what a
+learner can actually do, what is missing for a target job role, and what to learn next. Skills
+count as **verified only when evidence proves them** (assessment answers, code exercises), not
+because the learner claims them. Specialised AI agents collaborate to assess, diagnose,
+recommend and mentor, and the roadmap **adapts when the learner performs poorly or changes their
+career goal**. A **Learner Twin** predicts each answer before the learner submits it; its
+prediction accuracy is shown as a measure of how well the system models that learner.
 
-SkillTwin understands a learner's skills, identifies missing ones, and builds a personalised
-learning path to a target career. Specialised AI agents collaborate to assess, diagnose,
-recommend and mentor, and the plan adapts when the learner **changes career goal** or
-**performs poorly**. The app works fully without any API key (deterministic offline AI mode).
+- **Live app:** https://skilltwin-616974575902.asia-south1.run.app (the **Try the sample scenario**
+  button on the Dashboard runs both adaptation loops in one click)
+- **Without JavaScript:** [/about](https://skilltwin-616974575902.asia-south1.run.app/about)
+  (features → UI route → API endpoints → code → tests, plus the agent roster) ·
+  [/docs](https://skilltwin-616974575902.asia-south1.run.app/docs) (OpenAPI) ·
+  [/api/v1/meta](https://skilltwin-616974575902.asia-south1.run.app/api/v1/meta) (the same data as JSON)
+- **Vertical:** Education & Career Development
+- Works fully without API keys (deterministic offline AI mode).
 
 ## Problem statement alignment
 
-| Requirement | Implementation | Where in the UI |
-|---|---|---|
-| 1. User Profile (details, skills, certifications, projects, goal) | `backend/api/routes/profile.py`, `backend/core/models.py` (`Profile`), `frontend/js/views/profile.js` | **Profile** |
-| 2. Skill Analysis (strengths & weaknesses from skills + assessments) | `backend/core/analysis.py`, `backend/api/presenters.py`, `frontend/js/views/analysis.js`, `frontend/js/charts.js` | **Skill Analysis** |
-| 3. Career Matching (current vs required skills for a role) | `backend/core/career.py`, `backend/services/jobs.py`, `backend/api/routes/career.py`, `frontend/js/views/career.js` | **Career Matching** |
-| 4. Learning Recommendations (courses, tutorials, exercises) | `backend/core/roadmap.py`, `backend/agents/recommender.py`, `backend/data/resources.json`, `frontend/js/views/roadmap.js` | **Roadmap** |
-| 5. Progress Tracking (progress + assessment performance) | `backend/core/progress.py`, `backend/core/twin.py`, `backend/api/routes/progress.py`, `frontend/js/views/progress.js` | **Progress**, **Dashboard** |
-| 6. AI Mentor (guidance, updates recommendations from performance) | `backend/agents/mentor.py`, `backend/orchestrator/coaching.py`, `frontend/js/views/mentor.js` | **AI Mentor** |
-| Agentic: multiple specialised agents collaborate | `backend/agents/*`, `backend/orchestrator/*` | "How the agents worked together" on every AI result |
-| Adaptation: learner **performs poorly** | `backend/orchestrator/assessment.py` → `core/diagnosis.py` + `core/roadmap.reroute` | **Assessment** result → **Roadmap** reroute history |
-| Adaptation: learner **changes career goal** | `backend/orchestrator/planning.py` (`change_goal`) → `core/career.goal_switch` | **Career Matching** → Switch goal |
-| Sample scenario: Python, SQL, basic HTML → Full Stack Developer | `backend/data/seed_learners.json`, `tests/test_sample_scenario.py` | Preloaded learner on **Dashboard** |
+| Requirement | Implementation | UI route | Tests |
+|---|---|---|---|
+| 1. User Profile: learner details, skills, certifications, projects, career goal | `backend/api/routes/profile.py`, `backend/core/models.py`, `frontend/js/views/profile.js` | `#/profile` | `tests/test_api.py` |
+| 2. Skill Analysis: strengths and weaknesses from skills and assessments | `backend/core/analysis.py`, `frontend/js/views/analysis.js` | `#/analysis` | `tests/core/test_analysis.py` |
+| 3. Career Matching: current skills vs a job role's requirements | `backend/core/career.py`, `backend/services/jobs.py`, `frontend/js/views/career.js` | `#/career` | `tests/core/test_career.py`, `tests/test_services.py` |
+| 4. Learning Recommendations: courses, tutorials, practical exercises | `backend/core/roadmap.py`, `backend/agents/recommender.py`, `backend/data/resources.json`, `frontend/js/views/roadmap.js` | `#/roadmap` | `tests/core/test_roadmap.py` |
+| 5. Progress Tracking: learning progress and assessment performance | `backend/core/progress.py`, `backend/core/twin.py`, `frontend/js/views/progress.js` | `#/progress` | `tests/core/test_small_modules.py` |
+| 6. AI Mentor: guidance that updates recommendations from performance | `backend/agents/mentor.py`, `backend/orchestrator/coaching.py`, `frontend/js/views/mentor.js` | `#/mentor` | `tests/test_orchestrator.py` |
+| Agentic AI: specialised agents collaborate | `backend/agents/team.py`, `backend/orchestrator/__init__.py` | every AI result: "How the agents worked together" | `tests/agents/test_agents.py`, `tests/test_orchestrator.py` |
+| Adapts when the learner **performs poorly** | `backend/orchestrator/assessment.py`, `backend/core/diagnosis.py`, `backend/core/roadmap.py` | `#/assessment`, then `#/roadmap` reroute history | `tests/test_orchestrator.py`, `tests/core/test_diagnosis.py` |
+| Adapts when the learner **changes career goal** | `backend/orchestrator/planning.py`, `backend/core/career.py` | `#/career`, "Switch to …" | `tests/test_orchestrator.py`, `tests/core/test_career.py` |
+| Sample scenario: Python, SQL, basic HTML → Full Stack Developer | `backend/data/seed_learners.json`, `backend/orchestrator/scenario.py` | `#/dashboard` (also rendered on `/` without JS) | `tests/test_sample_scenario.py`, `tests/test_site.py` |
 
-Additional features: **Assessment** (MCQ, explain-back, predict-output, code exercise, work
-ticket), **Lessons** (Code Visualizer and Grid Game), **Learn in Public** (LinkedIn draft and
-`learning-log.md`), **Insights** (cohort misconceptions for institutions).
+Additional features: Assessment (MCQ, explain-back, predict-output, code exercise, work ticket),
+Lessons (Python code visualizer, JavaScript grid game), Learn in Public, Institution Insights.
+The full map, including every API endpoint, is generated from `backend/registry.py` and shown on
+`/about`; `tests/test_docs_consistency.py` fails if a file this README names does not exist.
 
-## Approach and logic
-
-1. **Evidence-verified skills.** Each skill has `claimed` (self-reported) and `confidence` (0–1)
-   computed only from evidence: a recency-weighted, type-weighted mean of assessment scores
-   (code exercise 1.0, explain-back 0.9, predict-output 0.8, work ticket 0.8, MCQ 0.6). Confidence
-   is capped at 0.6 until two different evidence types exist, so one lucky quiz cannot verify a
-   skill. A skill is **verified** at ≥ 0.7. Career readiness is shown twice: claimed % vs
-   proven %.
-2. **Deterministic core, LLM at the edges.** All decisions are pure, typed, unit-tested functions
-   in `backend/core/`. Agents return schema-validated JSON that the core consumes.
-3. **Learner Twin.** Before each answer, the Twin agent predicts the learner's exact answer and
-   reasoning from their confidence, recent scores and known misconceptions. The prediction is kept
-   server-side and revealed after submission; its rolling accuracy is shown on the Dashboard and
-   Progress pages as evidence that the model of the learner is personal. The Twin also answers
-   ten simulated "day in the role" tickets to predict weak areas before a real interview does.
-4. **Root-cause rerouting.** When an answer fails (score < 0.5), the core walks the prerequisite
-   graph (HTML → CSS → JavaScript → React, …) to the deepest unverified prerequisite and moves
-   that path to the front of the roadmap, logging a reroute event the learner can see.
-
-## How it works
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -64,6 +53,39 @@ flowchart LR
   API --> DB[(SQLite, per session)]
   API --> JOBS[Adzuna demand or curated]
 ```
+
+**Deterministic core, LLM at the edges.** Every decision that changes learner state (confidence,
+verification, readiness, gap order, root cause, reroute, time to ready, Twin accuracy) is a pure,
+typed, unit-tested function in `backend/core/`. Agents in `backend/agents/` only write, grade,
+predict and explain, and their output is schema-validated before the core uses it.
+`backend/orchestrator/` is the only place agents collaborate. Details:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Run and test
+
+```bash
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+uvicorn backend.main:create_app --factory --reload   # http://localhost:8000
+ruff check . && ruff format --check . && pytest --cov
+```
+
+## How it works
+
+1. **Evidence-verified skills.** Each skill has `claimed` (self-reported) and `confidence` (0–1)
+   computed only from evidence: a recency-weighted, type-weighted mean of assessment scores
+   (code exercise 1.0, explain-back 0.9, predict-output 0.8, work ticket 0.8, MCQ 0.6). Confidence
+   is capped at 0.6 until two different evidence types exist, so one lucky quiz cannot verify a
+   skill. A skill is **verified** at ≥ 0.7. Readiness is shown twice: claimed % vs proven %.
+2. **Learner Twin.** Before each answer, the Twin predicts the learner's answer and reasoning from
+   their confidence, recent scores and known misconceptions. The prediction stays on the server
+   and is revealed after submission; rolling accuracy is shown on the Dashboard and Progress
+   pages. The Twin also answers ten simulated "day in the role" tickets to predict weak areas.
+3. **Root-cause rerouting.** When an answer fails (score < 0.5), the core walks the prerequisite
+   graph (HTML → CSS → JavaScript → React, …) to the deepest unverified prerequisite and moves that
+   path to the front of the roadmap, logging a reroute event the learner can see.
+4. **Goal change.** Verified skills carry over to the new role (`carryover_pct`) and the roadmap
+   is rebuilt for the remaining gap only.
 
 Agent collaboration when the learner answers a question:
 
@@ -88,17 +110,6 @@ sequenceDiagram
     R->>L: why the new steps' resources fit
   end
 ```
-
-Adaptation loops:
-
-```mermaid
-flowchart TD
-  F[Poor answer] --> G[Root cause in prerequisite graph] --> H[Roadmap rerouted, event logged]
-  S[Goal changed] --> T[Verified skills carried over] --> U[Roadmap rebuilt for the new delta]
-  M[Mentor suggestion] --> N[Core moves those steps first]
-```
-
-More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Agents
 
@@ -126,7 +137,8 @@ deterministic MockLLM.
 Summary: secrets only via environment variables; signed HttpOnly session cookie; strict,
 bounded, extra-forbidding request schemas; 2.5 MB body limit; screenshot allowlist, size cap and
 verified decode with no persistence; per session + IP rate limits on every LLM route; strict CSP
-(no inline scripts) and security headers; learner code runs only in browser workers with timeouts;
+(no inline scripts; `/docs` allows only Swagger UI's own bootstrap script by SHA-256 hash) and
+security headers; learner code runs only in browser workers with timeouts;
 all text rendered via `textContent`; parameterised SQL; generic client errors; pinned
 dependencies; non-root container. Full details: [SECURITY.md](SECURITY.md).
 
@@ -159,11 +171,13 @@ ruff check . && ruff format --check .
 pytest --cov
 ```
 
-74 tests, 98% line coverage of `backend/` at the time of writing. Coverage includes every core
+87 tests, 98% line coverage of `backend/` at the time of writing. Coverage includes every core
 function and edge case (cycle detection, no evidence, all verified, single-type cap), agents with
 MockLLM (invalid-JSON retry and runtime fallback), both adaptation triggers in the orchestrator,
-the sample scenario (`tests/test_sample_scenario.py`), and API behaviour (validation errors,
-session isolation, rate limiting, body size limit, security headers, screenshot validation).
+the sample scenario (`tests/test_sample_scenario.py`), API behaviour (validation errors,
+session isolation, rate limiting, body size limit, security headers, screenshot validation),
+server-rendered pages and metadata (`tests/test_site.py`), and that every file the docs name
+exists (`tests/test_docs_consistency.py`).
 CI (`.github/workflows/ci.yml`) runs ruff check, ruff format check and pytest with coverage.
 
 ## Accessibility (WCAG 2.1 AA target)
@@ -197,14 +211,8 @@ separately from fluency is an inclusive-design choice for non-native speakers.
 
 ## Local setup
 
-```bash
-python3.12 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-cp .env.example .env   # optional: add GROQ_API_KEY and model names
-uvicorn backend.main:create_app --factory --reload
-```
-
-Open http://localhost:8000.
+Optional: `cp .env.example .env` and add `GROQ_API_KEY` (and model names) for live AI; without it
+the app runs in offline AI mode. See [Run and test](#run-and-test).
 
 ## Deploy (Google Cloud Run)
 
@@ -215,5 +223,7 @@ gcloud run deploy skilltwin --source . --region asia-south1 --allow-unauthentica
 ```
 
 `--max-instances 1` keeps every guest session on the instance that holds its SQLite data
-(storage is per instance; see Assumptions). The Dockerfile builds a multi-stage `python:3.12-slim` image, runs as a non-root user and starts
-uvicorn on `$PORT` with `--proxy-headers`.
+(storage is per instance; see Assumptions). The Dockerfile builds a multi-stage
+`python:3.12-slim` image, runs as a non-root user and starts uvicorn on `$PORT` with
+`--proxy-headers`. Health: `/health` returns status, version and LLM mode (Cloud Run reserves
+paths ending in `z`, so `/healthz` is for local use).

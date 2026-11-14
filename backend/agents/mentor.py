@@ -30,6 +30,7 @@ class Mentor(Agent[MentorIn, MentorOut]):
     key = "mentor"
     purpose = "Gave guidance grounded in the skill graph, roadmap and recent evidence"
     tier = "smart"
+    extra_tiers = ("vision",)
     max_tokens = 600
     output_model = MentorOut
     instructions = (

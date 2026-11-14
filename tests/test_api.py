@@ -4,6 +4,7 @@ import io
 from fastapi.testclient import TestClient
 from PIL import Image
 
+from backend import __version__
 from backend.main import create_app
 from tests.conftest import make_settings
 
@@ -17,9 +18,9 @@ def png_b64(size: tuple[int, int] = (2000, 1000)) -> str:
 
 
 def test_health_and_security_headers(client: TestClient) -> None:
-    assert client.get("/health").json() == {"status": "ok"}
     response = client.get("/healthz")
-    assert response.json() == {"status": "ok"}
+    assert response.json() == client.get("/health").json()
+    assert response.json() == {"status": "ok", "version": __version__, "llm": "offline"}
     csp = response.headers["content-security-policy"]
     assert "frame-ancestors 'none'" in csp and "'unsafe-inline'" not in csp
     assert response.headers["x-content-type-options"] == "nosniff"
@@ -163,4 +164,14 @@ def test_twin_interviews_and_publish(client: TestClient) -> None:
 
 
 def test_openapi_docs_enabled(client: TestClient) -> None:
-    assert client.get("/api/openapi.json").json()["info"]["title"] == "SkillTwin API"
+    assert client.get("/openapi.json").json()["info"]["title"] == "SkillTwin API"
+
+
+def test_sample_scenario_endpoint_resets_and_adapts(client: TestClient) -> None:
+    client.post(f"{API}/career/goal", json={"role_id": "frontend_developer"})
+    result = client.post(f"{API}/scenario/sample").json()
+    assert len(result["stages"]) == 3 and result["agent_trace"]
+    assert result["answer"]["diagnosis"]["path"] == ["html", "css", "javascript", "react"]
+    dashboard = client.get(f"{API}/dashboard").json()
+    assert dashboard["role_title"] == "Data Analyst"
+    assert {"missing", "unproven", "roadmap_order", "verified"} <= set(dashboard)

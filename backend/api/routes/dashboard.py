@@ -10,6 +10,7 @@ from backend.api.presenters import dashboard_view
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 
-@router.get("")
+@router.get("", summary="Dashboard summary")
 async def get_dashboard(learner: LearnerDep, services: ServicesDep) -> dict[str, Any]:
+    """Readiness (claimed vs proven), skill gaps, roadmap order, Twin accuracy and next steps."""
     return dashboard_view(services.orchestrator.context(learner), services.ai_live)
